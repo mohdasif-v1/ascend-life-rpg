@@ -9,7 +9,7 @@ import QuestModal from "@/components/QuestModal";
 import CompletionModal, { CompletionData } from "@/components/CompletionModal";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import EmptyState from "@/components/EmptyState";
-import LogoutButton from "@/components/LogoutButton";
+import Navigation from "@/components/Navigation";
 import { IQuest } from "@/models/Quest";
 import { IUserAttributes } from "@/models/User";
 
@@ -223,32 +223,28 @@ export default function DashboardClient() {
   return (
     <main className="min-h-screen bg-[#0a0a0c] text-neutral-100 pb-16">
       {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-30 border-b border-neutral-800/80 bg-[#0a0a0c]/80 backdrop-blur-md px-4 py-3.5 md:px-8">
-        <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl font-extrabold tracking-tight text-white">
-              ASCEND
-            </h1>
-            <span className="hidden sm:inline-block rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 text-[10px] font-semibold text-indigo-300">
-              LIFE RPG
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={openCreateModal}
-              className="rounded-lg bg-indigo-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            >
-              + Forge Quest
-            </button>
-            <LogoutButton />
-          </div>
-        </div>
-      </header>
+      <Navigation />
 
       {/* Main Content Area */}
       <div className="mx-auto max-w-6xl px-4 py-8 md:px-8 space-y-8">
+        {/* Action Header Banner */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-800 pb-4">
+          <div>
+            <h2 className="text-xl font-bold tracking-tight text-white">
+              Command Nexus
+            </h2>
+            <p className="text-xs text-neutral-400">
+              Manage real-life quests and track character progression
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={openCreateModal}
+            className="self-start sm:self-auto rounded-xl bg-indigo-600 px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-lg transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          >
+            + Forge New Quest
+          </button>
+        </div>
         {/* Error Notification Banner */}
         {errorMessage && (
           <div
