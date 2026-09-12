@@ -6,6 +6,7 @@ import CharacterCard from "@/components/CharacterCard";
 import AttributeBar from "@/components/AttributeBar";
 import QuestCard from "@/components/QuestCard";
 import QuestModal from "@/components/QuestModal";
+import CompletionModal, { CompletionData } from "@/components/CompletionModal";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import EmptyState from "@/components/EmptyState";
 import LogoutButton from "@/components/LogoutButton";
@@ -35,7 +36,12 @@ export default function DashboardClient() {
   const [completingId, setCompletingId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingQuest, setEditingQuest] = useState<IQuest | null>(null);
-  const [notification, setNotification] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [completionData, setCompletionData] = useState<CompletionData | null>(null);
+  const [attributeBump, setAttributeBump] = useState<{
+    attribute: string;
+    amount: number;
+  } | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -64,10 +70,15 @@ export default function DashboardClient() {
     fetchData();
   }, [fetchData]);
 
-  // Complete Quest Handler
+  // Complete Quest Handler: Authoritative Server Reconciliation
   async function handleCompleteQuest(questId: string) {
-    if (completingId) return;
+    if (completingId) return; // Prevent duplicate rapid clicks
     setCompletingId(questId);
+    setErrorMessage(null);
+
+    // Find current quest title for celebration modal
+    const questToComplete = quests.find((q) => String(q._id) === questId);
+
     try {
       const res = await fetch(`/api/quests/${questId}/complete`, {
         method: "POST",
@@ -75,20 +86,60 @@ export default function DashboardClient() {
       const data = await res.json();
 
       if (!res.ok) {
-        setNotification(data.error || "Failed to complete quest.");
+        setErrorMessage(
+          data.error ||
+            "Quest completion failed. Your progress was not changed. Try again."
+        );
         return;
       }
 
-      if (data.leveledUp) {
-        setNotification(`⭐ LEVEL UP! You ascended to Level ${data.newLevel}!`);
-      } else {
-        setNotification(`✓ Conquered! Gained ${data.xpEarned} XP & ${data.goldEarned} Gold.`);
+      // Authoritative Server Response received:
+      // data: { success, leveledUp, previousLevel, newLevel, xp, xpEarned, gold, goldEarned, attribute, attributeValue, attributeXp, currentStreak, longestStreak }
+
+      // 1. Trigger Attribute Bump
+      if (data.attribute && data.attributeXp) {
+        setAttributeBump({
+          attribute: data.attribute,
+          amount: data.attributeXp,
+        });
+        setTimeout(() => {
+          setAttributeBump(null);
+        }, 3500);
       }
 
-      // Re-fetch authoritative character and quest data
+      // 2. Open Completion/Celebration Modal with real server values
+      setCompletionData({
+        questTitle: questToComplete?.title || "Quest",
+        leveledUp: Boolean(data.leveledUp),
+        previousLevel: data.previousLevel || 1,
+        newLevel: data.newLevel || 1,
+        xpEarned: data.xpEarned || 0,
+        goldEarned: data.goldEarned || 0,
+        attribute: data.attribute || "intellect",
+        attributeXp: data.attributeXp || 0,
+        attributeValue: data.attributeValue || 0,
+        currentStreak: data.currentStreak || 0,
+      });
+
+      // 3. Mark quest as completed immediately in local list from authoritative success
+      setQuests((prevQuests) =>
+        prevQuests.map((q) =>
+          String(q._id) === questId
+            ? ({
+                ...q,
+                completed: true,
+                completedAt: new Date(),
+              } as IQuest)
+            : q
+        )
+      );
+
+      // 4. Reconcile character stats from server-authoritative response
       await fetchData();
     } catch {
-      setNotification("Network error while completing quest.");
+      setErrorMessage(
+        "Network error while completing quest. Your progress was not changed. Try again."
+      );
     } finally {
       setCompletingId(null);
     }
@@ -102,11 +153,12 @@ export default function DashboardClient() {
         method: "DELETE",
       });
       if (res.ok) {
-        setNotification("Quest removed.");
         await fetchData();
+      } else {
+        setErrorMessage("Failed to delete quest.");
       }
     } catch {
-      setNotification("Failed to delete quest.");
+      setErrorMessage("Network error while deleting quest.");
     }
   }
 
@@ -119,6 +171,7 @@ export default function DashboardClient() {
     difficulty: string;
   }) {
     setActionLoading(true);
+    setErrorMessage(null);
     try {
       if (editingQuest) {
         // PATCH
@@ -131,7 +184,6 @@ export default function DashboardClient() {
         if (!res.ok) {
           throw new Error(data.error || "Failed to update quest");
         }
-        setNotification("Quest updated.");
       } else {
         // POST
         const res = await fetch("/api/quests", {
@@ -143,7 +195,6 @@ export default function DashboardClient() {
         if (!res.ok) {
           throw new Error(data.error || "Failed to create quest");
         }
-        setNotification("New quest forged.");
       }
       await fetchData();
     } finally {
@@ -198,17 +249,18 @@ export default function DashboardClient() {
 
       {/* Main Content Area */}
       <div className="mx-auto max-w-6xl px-4 py-8 md:px-8 space-y-8">
-        {/* Notification Banner */}
-        {notification && (
+        {/* Error Notification Banner */}
+        {errorMessage && (
           <div
-            role="status"
-            className="flex items-center justify-between rounded-xl border border-indigo-500/40 bg-indigo-500/10 p-3.5 text-sm font-medium text-indigo-200 backdrop-blur-md"
+            role="alert"
+            className="flex items-center justify-between rounded-xl border border-rose-500/40 bg-rose-500/10 p-3.5 text-sm font-medium text-rose-300 backdrop-blur-md"
           >
-            <span>{notification}</span>
+            <span>{errorMessage}</span>
             <button
               type="button"
-              onClick={() => setNotification(null)}
-              className="text-xs text-neutral-400 hover:text-white"
+              onClick={() => setErrorMessage(null)}
+              aria-label="Dismiss error"
+              className="text-xs text-rose-400 hover:text-white"
             >
               ✕
             </button>
@@ -228,9 +280,12 @@ export default function DashboardClient() {
           />
         )}
 
-        {/* Attributes HUD */}
+        {/* Attributes HUD with dynamic bump indication */}
         {character?.attributes && (
-          <AttributeBar attributes={character.attributes} />
+          <AttributeBar
+            attributes={character.attributes}
+            recentlyBumped={attributeBump}
+          />
         )}
 
         {/* Quests Section */}
@@ -269,7 +324,7 @@ export default function DashboardClient() {
         </section>
       </div>
 
-      {/* Quest Modal */}
+      {/* Quest Forge/Edit Modal */}
       <QuestModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -287,6 +342,13 @@ export default function DashboardClient() {
             : null
         }
         loading={actionLoading}
+      />
+
+      {/* Quest Completion & Level-Up Celebration Modal */}
+      <CompletionModal
+        isOpen={Boolean(completionData)}
+        onClose={() => setCompletionData(null)}
+        data={completionData}
       />
     </main>
   );

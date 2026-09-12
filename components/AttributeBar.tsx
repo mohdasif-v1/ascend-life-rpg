@@ -3,6 +3,10 @@ import { IUserAttributes } from "@/models/User";
 
 interface AttributeBarProps {
   attributes: IUserAttributes;
+  recentlyBumped?: {
+    attribute: string;
+    amount: number;
+  } | null;
 }
 
 const ATTRIBUTE_CONFIG: {
@@ -49,8 +53,10 @@ const ATTRIBUTE_CONFIG: {
   },
 ];
 
-export default function AttributeBar({ attributes }: AttributeBarProps) {
-  // Cap at max 100 for visual width percentage, but attribute values can exceed 100
+export default function AttributeBar({
+  attributes,
+  recentlyBumped,
+}: AttributeBarProps) {
   const maxDisplay = 100;
 
   return (
@@ -66,12 +72,24 @@ export default function AttributeBar({ attributes }: AttributeBarProps) {
         {ATTRIBUTE_CONFIG.map((attr) => {
           const val = attributes[attr.key] || 0;
           const percentage = Math.min(100, Math.round((val / maxDisplay) * 100));
+          const isBumped = recentlyBumped?.attribute === attr.key;
 
           return (
             <div
               key={attr.key}
-              className="flex flex-col rounded-xl border border-neutral-800/80 bg-neutral-950/50 p-3.5"
+              className={`relative flex flex-col rounded-xl border p-3.5 transition-all duration-500 ${
+                isBumped
+                  ? "border-indigo-500/70 bg-indigo-950/20 shadow-lg shadow-indigo-500/10 scale-[1.02]"
+                  : "border-neutral-800/80 bg-neutral-950/50"
+              }`}
             >
+              {/* Attribute bump tag */}
+              {isBumped && (
+                <span className="absolute -top-2.5 right-2 rounded-full border border-indigo-500/50 bg-indigo-600 px-2 py-0.5 text-[10px] font-bold text-white shadow animate-bounce">
+                  +{recentlyBumped.amount}
+                </span>
+              )}
+
               <div className="flex items-center justify-between mb-2">
                 <span className="flex items-center gap-1.5 text-xs font-semibold text-neutral-300">
                   <span>{attr.icon}</span>
@@ -83,7 +101,7 @@ export default function AttributeBar({ attributes }: AttributeBarProps) {
               </div>
               <div className="h-1.5 w-full overflow-hidden rounded-full bg-neutral-900">
                 <div
-                  className={`h-full rounded-full transition-all duration-500 ${attr.barColor}`}
+                  className={`h-full rounded-full transition-all duration-700 ease-out ${attr.barColor}`}
                   style={{ width: `${Math.max(5, percentage)}%` }}
                 />
               </div>

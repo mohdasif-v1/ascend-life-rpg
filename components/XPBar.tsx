@@ -29,7 +29,7 @@ export default function XPBar({
       </div>
       <div className="h-2.5 w-full overflow-hidden rounded-full bg-neutral-900 border border-neutral-800 p-0.5">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 transition-all duration-500 shadow-sm"
+          className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 transition-all duration-700 ease-out shadow-sm"
           style={{ width: `${percentage}%` }}
         />
       </div>
