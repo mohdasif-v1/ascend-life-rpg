@@ -210,8 +210,8 @@ export default function ArmoryClient() {
                     </div>
 
                     {isOwned ? (
-                      <span className="inline-flex items-center gap-1 rounded-xl border border-obsidian-700 bg-obsidian-950 px-3.5 py-1.5 text-xs font-bold text-neutral-400 cursor-not-allowed">
-                        <Check className="h-3.5 w-3.5 text-neutral-500" aria-hidden="true" />
+                      <span className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 text-xs font-bold text-emerald-300">
+                        <Check className="h-3.5 w-3.5" aria-hidden="true" />
                         <span>OWNED</span>
                       </span>
                     ) : (
@@ -219,6 +219,11 @@ export default function ArmoryClient() {
                         type="button"
                         onClick={() => handlePurchase(item)}
                         disabled={isPurchasing || !canAfford}
+                        title={
+                          !canAfford
+                            ? `Requires ${item.price} Gold. Your treasury holds ${gold} Gold.`
+                            : `Acquire ${item.name} for ${item.price} Gold.`
+                        }
                         className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-display font-bold tracking-wider transition shadow ${
                           canAfford
                             ? "bg-arcane hover:bg-arcane-dark text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane-light"
@@ -229,7 +234,7 @@ export default function ArmoryClient() {
                           ? "ACQUIRING..."
                           : canAfford
                           ? "ACQUIRE"
-                          : "INSUFFICIENT GOLD"}
+                          : `NEED ${item.price - gold} MORE`}
                       </button>
                     )}
                   </div>

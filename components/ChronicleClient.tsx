@@ -100,6 +100,12 @@ export default function ChronicleClient() {
             <p className="mt-1 text-xs sm:text-sm text-neutral-400 max-w-sm">
               Conquer your first quest to start forging your permanent heroic legacy.
             </p>
+            <a
+              href="/dashboard"
+              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-arcane hover:bg-arcane-dark px-5 py-2.5 text-xs font-display font-bold tracking-wider text-white shadow-arcane transition focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane-light active:scale-[0.98]"
+            >
+              GO TO COMMAND NEXUS
+            </a>
           </div>
         ) : (
           <section aria-label="Quest History Ledger" className="space-y-3.5">
