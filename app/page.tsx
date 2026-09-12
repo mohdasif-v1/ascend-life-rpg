@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function HomePage() {
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#0a0a0c] px-6 text-center">
@@ -24,10 +26,26 @@ export default function HomePage() {
           Turn your real life into an RPG.
         </p>
 
+        {/* Auth CTA navigation */}
+        <div className="mt-8 flex items-center gap-4">
+          <Link
+            href="/login"
+            className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          >
+            Sign In
+          </Link>
+          <Link
+            href="/signup"
+            className="rounded-lg border border-neutral-700 bg-neutral-800/80 px-5 py-2.5 text-sm font-semibold text-neutral-200 transition hover:border-neutral-600 hover:bg-neutral-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-neutral-500"
+          >
+            Create Account
+          </Link>
+        </div>
+
         {/* Status indicator / info box */}
-        <div className="mt-10 rounded-xl border border-neutral-800/80 bg-neutral-900/40 p-4 text-xs font-mono text-neutral-400 backdrop-blur-sm sm:text-sm">
-          <p className="text-neutral-300">Phase 0: Skeleton Deployment</p>
-          <p className="mt-1 text-neutral-500">Core progression & authentication coming soon</p>
+        <div className="mt-12 rounded-xl border border-neutral-800/80 bg-neutral-900/40 p-4 text-xs font-mono text-neutral-400 backdrop-blur-sm sm:text-sm">
+          <p className="text-neutral-300">Phase 1: Authentication & Database</p>
+          <p className="mt-1 text-neutral-500">Core progression & attributes coming next</p>
         </div>
       </div>
     </main>
