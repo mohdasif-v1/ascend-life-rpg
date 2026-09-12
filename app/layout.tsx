@@ -24,7 +24,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://ascend-life-rpg-tan.vercel.app"),
+  metadataBase: new URL("https://ascendliferpg.mohdasifv1.dev"),
   title: {
     default: "ASCEND — Life RPG",
     template: "%s — ASCEND",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     title: "ASCEND — Turn Real Life Into an RPG",
     description:
       "Transform daily habits, real-world productivity, and discipline into a dark-fantasy RPG progression system.",
-    url: "https://ascend-life-rpg-tan.vercel.app",
+    url: "https://ascendliferpg.mohdasifv1.dev",
     siteName: "ASCEND",
     images: [
       {

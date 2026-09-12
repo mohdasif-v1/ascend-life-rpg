@@ -2,11 +2,11 @@
 
 > Turn real-world habits and productivity into an arcane progression RPG.
 
-[![Live Demo](https://img.shields.io/badge/Demo-Live%20App-8b5cf6?style=flat-square)](https://ascend-life-rpg-tan.vercel.app/)
+[![Live Demo](https://img.shields.io/badge/Demo-Live%20App-8b5cf6?style=flat-square)](https://ascendliferpg.mohdasifv1.dev)
 [![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-171717?style=flat-square)](https://github.com/mohdasif-v1/ascend-life-rpg)
 [![Stack](https://img.shields.io/badge/Stack-Next.js%2014%20%7C%20TypeScript%20%7C%20Tailwind%20%7C%20MongoDB-blue?style=flat-square)](https://github.com/mohdasif-v1/ascend-life-rpg)
 
-- **Live Application:** [https://ascend-life-rpg-tan.vercel.app/](https://ascend-life-rpg-tan.vercel.app/)
+- **Live Application:** [https://ascendliferpg.mohdasifv1.dev](https://ascendliferpg.mohdasifv1.dev)
 - **Source Repository:** [https://github.com/mohdasif-v1/ascend-life-rpg](https://github.com/mohdasif-v1/ascend-life-rpg)
 - **Demo Video Status:**
   > **Demo video: outstanding — needs to be re-exported as `.mp4` and uploaded to a public host (unlisted YouTube, or committed directly to the repo) before submission.**
@@ -262,7 +262,7 @@ npm run start
 
 ## Screenshots
 
-> Real visual captures are not committed directly in the Git tree (`docs/screenshots/` does not exist in repository to avoid committing local binary artifacts). Live screens can be inspected at the production deployment: [https://ascend-life-rpg-tan.vercel.app/](https://ascend-life-rpg-tan.vercel.app/).
+> Real visual captures are not committed directly in the Git tree (`docs/screenshots/` does not exist in repository to avoid committing local binary artifacts). Live screens can be inspected at the production deployment: [https://ascendliferpg.mohdasifv1.dev](https://ascendliferpg.mohdasifv1.dev).
 
 ---
 
@@ -270,14 +270,14 @@ npm run start
 
 To experience the core RPG progression loop in under 90 seconds:
 
-1. **Enroll:** Visit [/signup](https://ascend-life-rpg-tan.vercel.app/signup) and create a test account (e.g. `judge@ascend.game`).
+1. **Enroll:** Visit [/signup](https://ascendliferpg.mohdasifv1.dev/signup) and create a test account (e.g. `judge@ascend.game`).
 2. **Deterministic Level-Up Seeding:** Newly registered accounts are deliberately initialized at **Level 1 with 240 XP**. The Level 2 threshold is `282 XP`.
 3. **Inspect Dashboard:** View the starter quest: *"Complete your first coding quest"* (Easy difficulty, 50 XP, 25 Gold).
 4. **Complete Quest:** Click the checkmark to trigger the server-authoritative completion sequence.
 5. **Level-Up Sequence:** Total XP rises to `290 XP >= 282 XP`, immediately triggering the Level-Up celebration modal (Level 1 → Level 2).
 6. **State Persistence:** Refresh the page (`Ctrl+R` / `Cmd+R`). Notice Level 2, 290 XP, and 25 Gold remain fully persisted in MongoDB.
-7. **Visit Armory:** Navigate to [/armory](https://ascend-life-rpg-tan.vercel.app/armory). Inspect available items. Complete an additional quest to earn sufficient gold, or purchase an introductory item.
-8. **Inspect Chronicle:** Navigate to [/chronicle](https://ascend-life-rpg-tan.vercel.app/chronicle) to view the ledger audit log with timestamps, XP, and gold rewards.
+7. **Visit Armory:** Navigate to [/armory](https://ascendliferpg.mohdasifv1.dev/armory). Inspect available items. Complete an additional quest to earn sufficient gold, or purchase an introductory item.
+8. **Inspect Chronicle:** Navigate to [/chronicle](https://ascendliferpg.mohdasifv1.dev/chronicle) to view the ledger audit log with timestamps, XP, and gold rewards.
 
 ---
 
