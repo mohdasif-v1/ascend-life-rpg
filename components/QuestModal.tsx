@@ -50,7 +50,17 @@ export default function QuestModal({
       setDifficulty("easy");
     }
     setError("");
-  }, [initialData, isOpen]);
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    if (isOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [initialData, isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -83,18 +93,19 @@ export default function QuestModal({
     <div
       role="dialog"
       aria-modal="true"
+      aria-labelledby="quest-modal-title"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 px-4 backdrop-blur-sm"
     >
       <div className="w-full max-w-lg rounded-2xl border border-neutral-800 bg-neutral-950 p-6 shadow-2xl">
         <div className="flex items-center justify-between pb-4 border-b border-neutral-800">
-          <h3 className="text-lg font-bold text-white">
+          <h2 id="quest-modal-title" className="text-lg font-bold text-white">
             {initialData?.id ? "Edit Quest" : "Forge New Quest"}
-          </h3>
+          </h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close dialog"
-            className="rounded-lg p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-900 transition"
+            className="rounded-lg p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-900 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
           >
             ✕
           </button>

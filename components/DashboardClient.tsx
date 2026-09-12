@@ -230,9 +230,9 @@ export default function DashboardClient() {
         {/* Action Header Banner */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-800 pb-4">
           <div>
-            <h2 className="text-xl font-bold tracking-tight text-white">
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
               Command Nexus
-            </h2>
+            </h1>
             <p className="text-xs text-neutral-400">
               Manage real-life quests and track character progression
             </p>
@@ -240,7 +240,7 @@ export default function DashboardClient() {
           <button
             type="button"
             onClick={openCreateModal}
-            className="self-start sm:self-auto rounded-xl bg-indigo-600 px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-lg transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="self-start sm:self-auto rounded-xl bg-indigo-600 px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-lg transition hover:bg-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 active:scale-[0.98]"
           >
             + Forge New Quest
           </button>
@@ -249,14 +249,15 @@ export default function DashboardClient() {
         {errorMessage && (
           <div
             role="alert"
+            aria-live="polite"
             className="flex items-center justify-between rounded-xl border border-rose-500/40 bg-rose-500/10 p-3.5 text-sm font-medium text-rose-300 backdrop-blur-md"
           >
             <span>{errorMessage}</span>
             <button
               type="button"
               onClick={() => setErrorMessage(null)}
-              aria-label="Dismiss error"
-              className="text-xs text-rose-400 hover:text-white"
+              aria-label="Dismiss error notification"
+              className="text-xs text-rose-400 hover:text-white p-1 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
             >
               ✕
             </button>
