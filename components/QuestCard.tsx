@@ -109,8 +109,8 @@ export default function QuestCard({
               <button
                 type="button"
                 onClick={() => onEdit(quest)}
-                aria-label="Edit Quest"
-                className="rounded-lg border border-neutral-800 bg-neutral-950 px-2.5 py-1.5 text-xs font-medium text-neutral-400 hover:border-neutral-700 hover:text-white transition"
+                aria-label={`Edit quest: ${quest.title}`}
+                className="rounded-lg border border-neutral-800 bg-neutral-950 px-2.5 py-1.5 text-xs font-medium text-neutral-400 hover:border-neutral-700 hover:text-white transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
               >
                 Edit
               </button>
@@ -118,8 +118,8 @@ export default function QuestCard({
                 type="button"
                 onClick={() => onComplete(questId)}
                 disabled={isCompleting}
-                aria-label="Complete Quest"
-                className="rounded-lg bg-indigo-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:opacity-50"
+                aria-label={`Complete quest: ${quest.title}`}
+                className="rounded-lg bg-indigo-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow transition hover:bg-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 disabled:opacity-50"
               >
                 {isCompleting ? "Conquering..." : "Conquer"}
               </button>
@@ -129,10 +129,10 @@ export default function QuestCard({
           <button
             type="button"
             onClick={() => onDelete(questId)}
-            aria-label="Delete Quest"
-            className="rounded-lg border border-neutral-800 bg-neutral-950 p-1.5 text-neutral-500 hover:border-rose-900/50 hover:bg-rose-500/10 hover:text-rose-400 transition"
+            aria-label={`Delete quest: ${quest.title}`}
+            className="rounded-lg border border-neutral-800 bg-neutral-950 p-1.5 text-neutral-500 hover:border-rose-900/50 hover:bg-rose-500/10 hover:text-rose-400 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
           >
-            <span className="text-xs">🗑️</span>
+            <span className="text-xs" aria-hidden="true">🗑️</span>
           </button>
         </div>
       </div>

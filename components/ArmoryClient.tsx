@@ -71,11 +71,19 @@ export default function ArmoryClient() {
         type: "success",
         message: `Acquired ${item.name}! Added to your inventory.`,
       });
+
+      // Auto-dismiss notification after 4.5 seconds
+      setTimeout(() => {
+        setNotification(null);
+      }, 4500);
     } catch {
       setNotification({
         type: "error",
         message: "Network error during purchase. Try again.",
       });
+      setTimeout(() => {
+        setNotification(null);
+      }, 4500);
     } finally {
       setPurchasingId(null);
     }
@@ -130,6 +138,7 @@ export default function ArmoryClient() {
         {notification && (
           <div
             role={notification.type === "error" ? "alert" : "status"}
+            aria-live="polite"
             className={`flex items-center justify-between rounded-xl border p-4 text-sm font-medium backdrop-blur-md ${
               notification.type === "error"
                 ? "border-rose-500/40 bg-rose-500/10 text-rose-300"
@@ -140,7 +149,8 @@ export default function ArmoryClient() {
             <button
               type="button"
               onClick={() => setNotification(null)}
-              className="text-xs hover:opacity-80 ml-4"
+              aria-label="Dismiss notification"
+              className="text-xs hover:opacity-80 ml-4 p-1 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               ✕
             </button>
