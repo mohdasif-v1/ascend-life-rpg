@@ -11,12 +11,6 @@ export default function HomePage() {
       />
 
       <div className="relative z-10 mx-auto flex max-w-2xl flex-col items-center">
-        {/* Badge */}
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-arcane/30 bg-arcane/10 px-4 py-1 text-xs font-semibold tracking-wider text-arcane-light backdrop-blur-md">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="font-display font-bold">SYSTEM ONLINE</span>
-        </div>
-
         {/* Title */}
         <h1 className="font-display font-black text-5xl sm:text-7xl md:text-8xl tracking-widest text-white drop-shadow-sm">
           ASCEND
