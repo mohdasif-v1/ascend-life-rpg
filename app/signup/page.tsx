@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ArrowRight } from "lucide-react";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -31,7 +32,6 @@ export default function SignupPage() {
         return;
       }
 
-      // Registration successful -> navigate to login
       router.push("/login?registered=true");
     } catch {
       setError("An unexpected network error occurred.");
@@ -40,14 +40,17 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-[#0a0a0c] px-6 text-neutral-100">
-      <div className="w-full max-w-md rounded-2xl border border-neutral-800 bg-neutral-900/50 p-8 shadow-xl backdrop-blur-md">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-obsidian-950 px-6 text-neutral-100 bg-arcane-radial bg-rpg-grid">
+      <div className="w-full max-w-md rounded-2xl border border-obsidian-800 bg-obsidian-900/80 p-8 shadow-2xl backdrop-blur-md">
         <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
-            ASCEND
+          <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-obsidian-700 bg-obsidian-850 font-display font-black text-arcane-light">
+            A
+          </div>
+          <h1 className="font-display font-black text-2xl tracking-wider text-white">
+            BEGIN ASCENSION
           </h1>
-          <p className="mt-1 text-sm text-neutral-400">
-            Create an account to begin your journey
+          <p className="mt-1 text-xs text-neutral-400">
+            Create an account to forge your character
           </p>
         </div>
 
@@ -64,7 +67,7 @@ export default function SignupPage() {
           <div>
             <label
               htmlFor="email"
-              className="block text-xs font-medium uppercase tracking-wider text-neutral-400"
+              className="block text-xs font-semibold uppercase tracking-wider text-neutral-400"
             >
               Email Address
             </label>
@@ -77,14 +80,14 @@ export default function SignupPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="player@ascend.game"
-              className="mt-1.5 w-full rounded-lg border border-neutral-700 bg-neutral-950 px-3.5 py-2.5 text-sm text-white placeholder-neutral-600 transition focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="mt-1.5 w-full rounded-lg border border-obsidian-800 bg-obsidian-950 px-3.5 py-2.5 text-sm text-white placeholder-neutral-600 transition focus:border-arcane focus:outline-none focus-visible:ring-1 focus-visible:ring-arcane"
             />
           </div>
 
           <div>
             <label
               htmlFor="password"
-              className="block text-xs font-medium uppercase tracking-wider text-neutral-400"
+              className="block text-xs font-semibold uppercase tracking-wider text-neutral-400"
             >
               Password
             </label>
@@ -98,24 +101,24 @@ export default function SignupPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Minimum 6 characters"
-              className="mt-1.5 w-full rounded-lg border border-neutral-700 bg-neutral-950 px-3.5 py-2.5 text-sm text-white placeholder-neutral-600 transition focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="mt-1.5 w-full rounded-lg border border-obsidian-800 bg-obsidian-950 px-3.5 py-2.5 text-sm text-white placeholder-neutral-600 transition focus:border-arcane focus:outline-none focus-visible:ring-1 focus-visible:ring-arcane"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="mt-2 w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-neutral-900 disabled:opacity-50"
+            className="mt-2 w-full rounded-xl bg-arcane hover:bg-arcane-dark py-2.5 px-4 text-xs font-display font-bold tracking-wider text-white shadow-arcane transition focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane-light active:scale-[0.98] disabled:opacity-50"
           >
-            {loading ? "Creating Account..." : "Create Account"}
+            {loading ? "FORGING ACCOUNT..." : "CREATE ACCOUNT"}
           </button>
         </form>
 
         <p className="mt-6 text-center text-xs text-neutral-400">
-          Already have an account?{" "}
+          Already forged?{" "}
           <Link
             href="/login"
-            className="font-medium text-indigo-400 hover:text-indigo-300 underline"
+            className="font-medium text-arcane-light hover:text-white underline underline-offset-4"
           >
             Sign in
           </Link>

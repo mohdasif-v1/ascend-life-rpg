@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { Shield, Coins, Check, X, Sparkles } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { IItem } from "@/models/Item";
 
@@ -42,8 +43,9 @@ export default function ArmoryClient() {
     if (gold < item.price) {
       setNotification({
         type: "error",
-        message: `Not enough gold. Current: ${gold} Gold, Required: ${item.price} Gold.`,
+        message: `Insufficient gold. Treasury holds ${gold} Gold; item requires ${item.price} Gold.`,
       });
+      setTimeout(() => setNotification(null), 4500);
       return;
     }
 
@@ -61,29 +63,23 @@ export default function ArmoryClient() {
           type: "error",
           message: data.error || "Purchase failed. Try again.",
         });
+        setTimeout(() => setNotification(null), 4500);
         return;
       }
 
-      // Authoritative server state update
       setGold(data.remainingGold);
       setOwnedItemIds((prev) => [...prev, itemId]);
       setNotification({
         type: "success",
-        message: `Acquired ${item.name}! Added to your inventory.`,
+        message: `Acquired ${item.name}! Added to your active inventory.`,
       });
-
-      // Auto-dismiss notification after 4.5 seconds
-      setTimeout(() => {
-        setNotification(null);
-      }, 4500);
+      setTimeout(() => setNotification(null), 4500);
     } catch {
       setNotification({
         type: "error",
         message: "Network error during purchase. Try again.",
       });
-      setTimeout(() => {
-        setNotification(null);
-      }, 4500);
+      setTimeout(() => setNotification(null), 4500);
     } finally {
       setPurchasingId(null);
     }
@@ -94,47 +90,47 @@ export default function ArmoryClient() {
     const entries = Object.entries(bonus).filter(([, val]) => val > 0);
     if (entries.length === 0) return null;
     return entries.map(([attr, val]) => (
-      <span key={attr} className="uppercase text-xs font-mono font-bold text-indigo-300">
+      <span key={attr} className="uppercase text-xs font-mono font-bold text-arcane-light">
         +{val} {attr}
       </span>
     ));
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0c] text-neutral-100 pb-16">
+    <div className="min-h-screen bg-obsidian-950 text-neutral-100 pb-16 bg-arcane-radial bg-rpg-grid">
       <Navigation />
 
       <main className="mx-auto max-w-6xl px-4 py-8 md:px-8 space-y-8">
         {/* Header Banner */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-800 pb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 border-b border-obsidian-800 pb-6">
           <div>
-            <div className="inline-flex items-center gap-1.5 rounded-md border border-yellow-500/30 bg-yellow-500/10 px-2.5 py-0.5 text-xs font-semibold text-yellow-300 mb-2">
-              <span>🛡️</span>
-              <span>VALOR VAULT</span>
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-yellow-500/30 bg-yellow-500/10 px-3 py-0.5 text-xs font-semibold text-yellow-300 mb-2">
+              <Shield className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="font-display font-bold">VALOR VAULT</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+            <h1 className="font-display font-black text-2xl sm:text-3xl tracking-wide text-white">
               ARMORY
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-neutral-400">
-              Spend your hard-earned gold to strengthen your character.
+              Exchange hard-earned gold for artifacts and permanent attribute enhancements
             </p>
           </div>
 
-          {/* Current Gold Display */}
-          <div className="flex items-center gap-2.5 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 px-5 py-3 shadow-lg shadow-yellow-500/5 backdrop-blur-md self-start sm:self-auto">
-            <span className="text-2xl">🪙</span>
+          {/* Treasury Display */}
+          <div className="flex items-center gap-3 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 px-5 py-3 shadow-gold backdrop-blur-md self-start sm:self-auto">
+            <Coins className="h-6 w-6 text-yellow-400" aria-hidden="true" />
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-yellow-500/80 block">
-                Treasury
+                Treasury Balance
               </span>
-              <span className="text-xl font-mono font-black text-yellow-300">
+              <span className="font-display font-black text-xl text-yellow-300">
                 {gold} Gold
               </span>
             </div>
           </div>
         </div>
 
-        {/* Notification / Alert */}
+        {/* Notification Toast */}
         {notification && (
           <div
             role={notification.type === "error" ? "alert" : "status"}
@@ -152,23 +148,23 @@ export default function ArmoryClient() {
               aria-label="Dismiss notification"
               className="text-xs hover:opacity-80 ml-4 p-1 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
-              ✕
+              <X className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
         )}
 
-        {/* Items Catalog */}
+        {/* Catalog Items */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {[1, 2, 3, 4, 5].map((n) => (
               <div
                 key={n}
-                className="h-52 rounded-2xl border border-neutral-800 bg-neutral-900/40 animate-pulse"
+                className="h-52 rounded-2xl border border-obsidian-800 bg-obsidian-900/40 animate-pulse"
               />
             ))}
           </div>
         ) : items.length === 0 ? (
-          <div className="rounded-2xl border border-neutral-800 bg-neutral-900/40 p-12 text-center">
+          <div className="rounded-2xl border border-obsidian-800 bg-obsidian-900/40 p-12 text-center">
             <p className="text-neutral-400">The armory is currently empty.</p>
           </div>
         ) : (
@@ -180,18 +176,17 @@ export default function ArmoryClient() {
               const canAfford = gold >= item.price;
 
               return (
-                <div
+                <article
                   key={itemId}
-                  className={`group relative flex flex-col justify-between rounded-2xl border p-6 transition-all duration-200 ${
+                  className={`relative flex flex-col justify-between rounded-2xl border p-6 transition-all duration-200 ${
                     isOwned
-                      ? "border-neutral-800/80 bg-neutral-950/40 opacity-80"
-                      : "border-neutral-800 bg-neutral-900/60 hover:border-neutral-700 shadow-xl"
+                      ? "border-obsidian-800/80 bg-obsidian-950/40 opacity-75"
+                      : "border-obsidian-800 bg-obsidian-900/80 hover:border-obsidian-700 shadow-xl"
                   }`}
                 >
                   <div>
-                    {/* Item Type & Bonus */}
                     <div className="flex items-center justify-between gap-2 mb-3">
-                      <span className="rounded-md border border-neutral-800 bg-neutral-950 px-2 py-0.5 text-[11px] font-medium text-neutral-400">
+                      <span className="rounded-md border border-obsidian-700 bg-obsidian-950 px-2 py-0.5 text-[11px] font-medium text-neutral-400">
                         {item.type}
                       </span>
                       <div className="flex items-center gap-1.5">
@@ -199,48 +194,46 @@ export default function ArmoryClient() {
                       </div>
                     </div>
 
-                    {/* Item Name */}
-                    <h3 className="text-lg font-bold tracking-tight text-white">
+                    <h3 className="font-display font-bold text-lg tracking-wide text-white">
                       {item.name}
                     </h3>
 
-                    {/* Description */}
                     <p className="mt-2 text-xs text-neutral-400 leading-relaxed">
                       {item.description}
                     </p>
                   </div>
 
-                  {/* Footer Price & Action */}
-                  <div className="mt-6 flex items-center justify-between border-t border-neutral-800/80 pt-4">
-                    <div className="flex items-center gap-1.5 font-mono text-sm font-bold text-yellow-400">
-                      <span>🪙</span>
+                  <div className="mt-6 flex items-center justify-between border-t border-obsidian-800 pt-4">
+                    <div className="flex items-center gap-1.5 font-display font-bold text-sm text-yellow-400">
+                      <Coins className="h-4 w-4" aria-hidden="true" />
                       <span>{item.price} Gold</span>
                     </div>
 
                     {isOwned ? (
-                      <span className="rounded-xl border border-neutral-800 bg-neutral-900 px-4 py-2 text-xs font-bold text-neutral-400 cursor-not-allowed">
-                        OWNED
+                      <span className="inline-flex items-center gap-1 rounded-xl border border-obsidian-700 bg-obsidian-950 px-3.5 py-1.5 text-xs font-bold text-neutral-400 cursor-not-allowed">
+                        <Check className="h-3.5 w-3.5 text-neutral-500" aria-hidden="true" />
+                        <span>OWNED</span>
                       </span>
                     ) : (
                       <button
                         type="button"
                         onClick={() => handlePurchase(item)}
                         disabled={isPurchasing || !canAfford}
-                        className={`rounded-xl px-4 py-2 text-xs font-bold transition shadow ${
+                        className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-display font-bold tracking-wider transition shadow ${
                           canAfford
-                            ? "bg-indigo-600 text-white hover:bg-indigo-500 focus:ring-2 focus:ring-indigo-400"
-                            : "bg-neutral-800 text-neutral-500 cursor-not-allowed border border-neutral-700/50"
+                            ? "bg-arcane hover:bg-arcane-dark text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane-light"
+                            : "bg-obsidian-850 text-neutral-500 cursor-not-allowed border border-obsidian-800"
                         } disabled:opacity-60`}
                       >
                         {isPurchasing
-                          ? "Acquiring..."
+                          ? "ACQUIRING..."
                           : canAfford
                           ? "ACQUIRE"
                           : "INSUFFICIENT GOLD"}
                       </button>
                     )}
                   </div>
-                </div>
+                </article>
               );
             })}
           </div>

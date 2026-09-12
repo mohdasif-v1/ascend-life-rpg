@@ -1,4 +1,5 @@
 import React from "react";
+import { Swords, Brain, Heart, Crosshair, Shield, Check, Trash2, Edit2, Zap, Coins } from "lucide-react";
 import { IQuest } from "@/models/Quest";
 
 interface QuestCardProps {
@@ -9,19 +10,19 @@ interface QuestCardProps {
   isCompleting: boolean;
 }
 
-const DIFFICULTY_COLORS = {
-  easy: "text-emerald-400 border-emerald-500/20 bg-emerald-500/10",
-  medium: "text-sky-400 border-sky-500/20 bg-sky-500/10",
-  hard: "text-amber-400 border-amber-500/20 bg-amber-500/10",
-  epic: "text-purple-400 border-purple-500/20 bg-purple-500/10",
+const DIFFICULTY_STYLES: Record<string, string> = {
+  easy: "text-emerald-300 border-emerald-500/30 bg-emerald-500/10",
+  medium: "text-sky-300 border-sky-500/30 bg-sky-500/10",
+  hard: "text-amber-300 border-amber-500/30 bg-amber-500/10",
+  epic: "text-arcane-light border-arcane/40 bg-arcane/15",
 };
 
-const ATTRIBUTE_ICONS: Record<string, string> = {
-  strength: "⚔️",
-  intellect: "🧠",
-  vitality: "💚",
-  focus: "🎯",
-  discipline: "🛡️",
+const ATTRIBUTE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  strength: Swords,
+  intellect: Brain,
+  vitality: Heart,
+  focus: Crosshair,
+  discipline: Shield,
 };
 
 export default function QuestCard({
@@ -32,34 +33,30 @@ export default function QuestCard({
   isCompleting,
 }: QuestCardProps) {
   const questId = String(quest._id);
-  const diffStyle =
-    DIFFICULTY_COLORS[quest.difficulty as keyof typeof DIFFICULTY_COLORS] ||
-    DIFFICULTY_COLORS.easy;
+  const diffStyle = DIFFICULTY_STYLES[quest.difficulty] || DIFFICULTY_STYLES.easy;
+  const AttrIcon = ATTRIBUTE_ICONS[quest.attribute] || Zap;
 
   return (
-    <div
-      className={`group relative flex flex-col justify-between rounded-2xl border p-5 transition-all duration-200 ${
+    <article
+      className={`relative flex flex-col justify-between rounded-2xl border p-5 transition-all duration-200 ${
         quest.completed
-          ? "border-neutral-800/60 bg-neutral-900/30 opacity-75"
-          : "border-neutral-800 bg-neutral-900/60 hover:border-neutral-700 hover:bg-neutral-900/80 shadow-lg"
+          ? "border-obsidian-800/80 bg-obsidian-950/40 opacity-70"
+          : "border-obsidian-800 bg-obsidian-900/80 hover:border-obsidian-700 shadow-lg"
       }`}
     >
       <div>
         {/* Header Badges */}
         <div className="flex items-center justify-between gap-2 mb-3">
-          <div className="flex items-center gap-2">
-            {/* Category */}
-            <span className="rounded-md border border-neutral-800 bg-neutral-950 px-2 py-0.5 text-xs font-medium text-neutral-400">
+          <div className="flex items-center gap-2.5">
+            <span className="rounded-md border border-obsidian-700 bg-obsidian-950 px-2 py-0.5 text-xs font-medium text-neutral-400">
               {quest.category}
             </span>
-            {/* Attribute */}
-            <span className="inline-flex items-center gap-1 text-xs text-neutral-300 font-medium">
-              <span>{ATTRIBUTE_ICONS[quest.attribute] || "✨"}</span>
+            <span className="inline-flex items-center gap-1.5 text-xs text-neutral-300 font-medium">
+              <AttrIcon className="h-3.5 w-3.5 text-arcane-light" />
               <span className="capitalize">{quest.attribute}</span>
             </span>
           </div>
 
-          {/* Difficulty */}
           <span
             className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider ${diffStyle}`}
           >
@@ -69,7 +66,7 @@ export default function QuestCard({
 
         {/* Quest Title */}
         <h4
-          className={`text-base font-bold tracking-tight text-white ${
+          className={`font-display font-bold text-base tracking-wide text-white ${
             quest.completed ? "line-through text-neutral-400" : ""
           }`}
         >
@@ -78,31 +75,30 @@ export default function QuestCard({
 
         {/* Description */}
         {quest.description && (
-          <p className="mt-1 text-xs text-neutral-400 line-clamp-2">
+          <p className="mt-1.5 text-xs text-neutral-400 leading-relaxed line-clamp-2">
             {quest.description}
           </p>
         )}
       </div>
 
-      {/* Footer / Rewards & Actions */}
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-neutral-800/80 pt-4">
-        {/* Authoritative Rewards */}
+      {/* Rewards & Actions */}
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-obsidian-800 pt-4">
         <div className="flex items-center gap-3 text-xs font-mono">
-          <span className="inline-flex items-center gap-1 font-semibold text-indigo-400">
-            <span>⚡</span>
+          <span className="inline-flex items-center gap-1 font-semibold text-arcane-light">
+            <Zap className="h-3.5 w-3.5" aria-hidden="true" />
             <span>+{quest.xpReward} XP</span>
           </span>
-          <span className="inline-flex items-center gap-1 font-semibold text-yellow-400">
-            <span>🪙</span>
+          <span className="inline-flex items-center gap-1 font-semibold text-relic-gold">
+            <Coins className="h-3.5 w-3.5" aria-hidden="true" />
             <span>+{quest.goldReward} Gold</span>
           </span>
         </div>
 
-        {/* Action Controls */}
         <div className="flex items-center gap-2">
           {quest.completed ? (
-            <span className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-300">
-              <span>✓</span> Conquered
+            <span className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-300">
+              <Check className="h-3.5 w-3.5" aria-hidden="true" />
+              <span>Fulfilled</span>
             </span>
           ) : (
             <>
@@ -110,16 +106,17 @@ export default function QuestCard({
                 type="button"
                 onClick={() => onEdit(quest)}
                 aria-label={`Edit quest: ${quest.title}`}
-                className="rounded-lg border border-neutral-800 bg-neutral-950 px-2.5 py-1.5 text-xs font-medium text-neutral-400 hover:border-neutral-700 hover:text-white transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                className="inline-flex items-center gap-1 rounded-lg border border-obsidian-800 bg-obsidian-950 px-2.5 py-1.5 text-xs font-medium text-neutral-300 hover:border-obsidian-700 hover:text-white transition focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane"
               >
-                Edit
+                <Edit2 className="h-3 w-3" aria-hidden="true" />
+                <span>Edit</span>
               </button>
               <button
                 type="button"
                 onClick={() => onComplete(questId)}
                 disabled={isCompleting}
                 aria-label={`Complete quest: ${quest.title}`}
-                className="rounded-lg bg-indigo-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow transition hover:bg-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 disabled:opacity-50"
+                className="rounded-lg bg-arcane hover:bg-arcane-dark px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane-light disabled:opacity-50"
               >
                 {isCompleting ? "Conquering..." : "Conquer"}
               </button>
@@ -130,12 +127,12 @@ export default function QuestCard({
             type="button"
             onClick={() => onDelete(questId)}
             aria-label={`Delete quest: ${quest.title}`}
-            className="rounded-lg border border-neutral-800 bg-neutral-950 p-1.5 text-neutral-500 hover:border-rose-900/50 hover:bg-rose-500/10 hover:text-rose-400 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
+            className="rounded-lg border border-obsidian-800 bg-obsidian-950 p-2 text-neutral-400 hover:border-rose-900/50 hover:bg-rose-500/10 hover:text-rose-400 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
           >
-            <span className="text-xs" aria-hidden="true">🗑️</span>
+            <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
         </div>
       </div>
-    </div>
+    </article>
   );
 }

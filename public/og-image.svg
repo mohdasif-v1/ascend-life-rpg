@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" fill="none">
+  <rect width="1200" height="630" fill="#070709"/>
+  <rect x="2" y="2" width="1196" height="626" stroke="#272738" stroke-width="2"/>
+  <circle cx="600" cy="180" r="320" fill="#8b5cf6" fill-opacity="0.12" filter="blur(80px)"/>
+
+  <!-- Sigil Icon -->
+  <g transform="translate(540, 100) scale(1.8)">
+    <path d="M32 8L50 48H39L32 30L25 48H14L32 8Z" fill="#8b5cf6" stroke="#c4b5fd" stroke-width="1.5"/>
+    <polygon points="32,20 36,36 28,36" fill="#f59e0b"/>
+  </g>
+
+  <!-- Typography -->
+  <text x="600" y="320" text-anchor="middle" font-family="'Cinzel', Georgia, serif" font-weight="900" font-size="68" fill="#ededef" letter-spacing="4">
+    ASCEND
+  </text>
+  <text x="600" y="380" text-anchor="middle" font-family="'Outfit', sans-serif" font-weight="500" font-size="28" fill="#a1a1aa" letter-spacing="1">
+    Turn Real Life Into an RPG
+  </text>
+
+  <!-- Tag Pill -->
+  <rect x="470" y="430" width="260" height="42" rx="21" fill="#13131a" stroke="#8b5cf6" stroke-width="1.5"/>
+  <text x="600" y="457" text-anchor="middle" font-family="'Outfit', sans-serif" font-weight="600" font-size="16" fill="#c4b5fd" letter-spacing="2">
+    DARK FANTASY HUD
+  </text>
+</svg>

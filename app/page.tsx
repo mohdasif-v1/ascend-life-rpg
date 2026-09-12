@@ -1,51 +1,65 @@
 import Link from "next/link";
+import { Compass, Shield, Zap } from "lucide-react";
 
 export default function HomePage() {
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#0a0a0c] px-6 text-center">
+    <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-obsidian-950 px-6 text-center bg-arcane-radial bg-rpg-grid">
       {/* Subtle atmospheric ambient glow */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-40 left-1/2 h-[450px] w-[650px] -translate-x-1/2 rounded-full bg-gradient-to-b from-indigo-600/15 via-violet-600/10 to-transparent blur-3xl"
+        className="pointer-events-none absolute -top-40 left-1/2 h-[450px] w-[650px] -translate-x-1/2 rounded-full bg-arcane/15 blur-3xl"
       />
 
       <div className="relative z-10 mx-auto flex max-w-2xl flex-col items-center">
         {/* Badge */}
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-neutral-800 bg-neutral-900/60 px-3.5 py-1 text-xs font-medium tracking-wide text-neutral-300 backdrop-blur-md">
+        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-arcane/30 bg-arcane/10 px-4 py-1 text-xs font-semibold tracking-wider text-arcane-light backdrop-blur-md">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span>System Online</span>
+          <span className="font-display font-bold">SYSTEM ONLINE</span>
         </div>
 
         {/* Title */}
-        <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-6xl md:text-7xl">
+        <h1 className="font-display font-black text-5xl sm:text-7xl md:text-8xl tracking-widest text-white drop-shadow-sm">
           ASCEND
         </h1>
 
         {/* Tagline */}
-        <p className="mt-4 text-lg font-normal tracking-wide text-neutral-400 sm:text-xl md:text-2xl">
+        <p className="mt-5 text-lg font-normal tracking-wide text-neutral-300 sm:text-xl md:text-2xl max-w-lg">
           Turn your real life into an RPG.
         </p>
 
+        {/* Feature pillars */}
+        <div className="mt-8 grid grid-cols-3 gap-3 text-left w-full max-w-md">
+          <div className="rounded-xl border border-obsidian-800 bg-obsidian-900/60 p-3">
+            <Compass className="h-4 w-4 text-arcane-light mb-1.5" aria-hidden="true" />
+            <h2 className="font-display font-bold text-xs text-white">QUESTS</h2>
+            <p className="text-[11px] text-neutral-400 mt-0.5">Real-life tasks</p>
+          </div>
+          <div className="rounded-xl border border-obsidian-800 bg-obsidian-900/60 p-3">
+            <Zap className="h-4 w-4 text-relic-gold mb-1.5" aria-hidden="true" />
+            <h2 className="font-display font-bold text-xs text-white">PROGRESS</h2>
+            <p className="text-[11px] text-neutral-400 mt-0.5">XP & Leveling</p>
+          </div>
+          <div className="rounded-xl border border-obsidian-800 bg-obsidian-900/60 p-3">
+            <Shield className="h-4 w-4 text-emerald-400 mb-1.5" aria-hidden="true" />
+            <h2 className="font-display font-bold text-xs text-white">ARMORY</h2>
+            <p className="text-[11px] text-neutral-400 mt-0.5">Artifact spoils</p>
+          </div>
+        </div>
+
         {/* Auth CTA navigation */}
-        <div className="mt-8 flex items-center gap-4">
+        <div className="mt-10 flex items-center gap-4">
           <Link
             href="/login"
-            className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="rounded-xl bg-arcane hover:bg-arcane-dark px-6 py-3 text-sm font-display font-bold tracking-wider text-white shadow-arcane transition focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane-light active:scale-[0.98]"
           >
-            Sign In
+            SIGN IN
           </Link>
           <Link
             href="/signup"
-            className="rounded-lg border border-neutral-700 bg-neutral-800/80 px-5 py-2.5 text-sm font-semibold text-neutral-200 transition hover:border-neutral-600 hover:bg-neutral-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-neutral-500"
+            className="rounded-xl border border-obsidian-700 bg-obsidian-900 px-6 py-3 text-sm font-display font-bold tracking-wider text-neutral-200 transition hover:border-obsidian-600 hover:bg-obsidian-850 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane active:scale-[0.98]"
           >
-            Create Account
+            CREATE ACCOUNT
           </Link>
-        </div>
-
-        {/* Status indicator / info box */}
-        <div className="mt-12 rounded-xl border border-neutral-800/80 bg-neutral-900/40 p-4 text-xs font-mono text-neutral-400 backdrop-blur-sm sm:text-sm">
-          <p className="text-neutral-300">Phase 1: Authentication & Database</p>
-          <p className="mt-1 text-neutral-500">Core progression & attributes coming next</p>
         </div>
       </div>
     </main>
