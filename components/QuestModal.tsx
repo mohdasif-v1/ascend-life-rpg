@@ -96,16 +96,16 @@ export default function QuestModal({
       aria-labelledby="quest-modal-title"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 px-4 backdrop-blur-sm"
     >
-      <div className="w-full max-w-lg rounded-2xl border border-neutral-800 bg-neutral-950 p-6 shadow-2xl">
-        <div className="flex items-center justify-between pb-4 border-b border-neutral-800">
-          <h2 id="quest-modal-title" className="text-lg font-bold text-white">
+      <div className="w-full max-w-lg rounded-2xl border border-obsidian-800 bg-obsidian-900 p-6 shadow-2xl">
+        <div className="flex items-center justify-between pb-4 border-b border-obsidian-800">
+          <h2 id="quest-modal-title" className="text-lg font-bold font-display tracking-wide text-white">
             {initialData?.id ? "Edit Quest" : "Forge New Quest"}
           </h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close dialog"
-            className="rounded-lg p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-900 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+            className="rounded-lg p-1.5 text-neutral-400 hover:text-white hover:bg-obsidian-800 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane"
           >
             ✕
           </button>
@@ -135,7 +135,7 @@ export default function QuestModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Master dynamic programming fundamentals"
-              className="mt-1 w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3.5 py-2 text-sm text-white placeholder-neutral-600 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="mt-1 w-full rounded-lg border border-obsidian-750 bg-obsidian-850 px-3.5 py-2 text-sm text-white placeholder-neutral-500 focus:border-arcane focus:outline-none focus:ring-1 focus:ring-arcane"
             />
           </div>
 
@@ -152,7 +152,7 @@ export default function QuestModal({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="e.g. Solve 3 medium problems on recursion"
-              className="mt-1 w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3.5 py-2 text-sm text-white placeholder-neutral-600 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="mt-1 w-full rounded-lg border border-obsidian-750 bg-obsidian-850 px-3.5 py-2 text-sm text-white placeholder-neutral-500 focus:border-arcane focus:outline-none focus:ring-1 focus:ring-arcane"
             />
           </div>
 
@@ -171,7 +171,7 @@ export default function QuestModal({
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 placeholder="Coding, Fitness..."
-                className="mt-1 w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-obsidian-750 bg-obsidian-850 px-3 py-2 text-sm text-white focus:border-arcane focus:outline-none focus:ring-1 focus:ring-arcane"
               />
             </div>
 
@@ -186,7 +186,7 @@ export default function QuestModal({
                 id="quest-attribute"
                 value={attribute}
                 onChange={(e) => setAttribute(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-obsidian-750 bg-obsidian-850 px-3 py-2 text-sm text-white focus:border-arcane focus:outline-none focus:ring-1 focus:ring-arcane"
               >
                 <option value="intellect">Intellect</option>
                 <option value="strength">Strength</option>
@@ -207,7 +207,7 @@ export default function QuestModal({
                 id="quest-difficulty"
                 value={difficulty}
                 onChange={(e) => setDifficulty(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-obsidian-750 bg-obsidian-850 px-3 py-2 text-sm text-white focus:border-arcane focus:outline-none focus:ring-1 focus:ring-arcane"
               >
                 <option value="easy">Easy (50 XP)</option>
                 <option value="medium">Medium (80 XP)</option>
@@ -217,18 +217,18 @@ export default function QuestModal({
             </div>
           </div>
 
-          <div className="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-neutral-800">
+          <div className="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-obsidian-800">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg border border-neutral-800 px-4 py-2 text-sm font-medium text-neutral-400 hover:text-white transition"
+              className="rounded-lg border border-obsidian-750 px-4 py-2 text-sm font-medium text-neutral-400 hover:text-white hover:bg-obsidian-800 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:opacity-50"
+              className="rounded-lg bg-arcane px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-arcane/20 transition hover:bg-arcane-light disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane"
             >
               {loading
                 ? "Saving..."
