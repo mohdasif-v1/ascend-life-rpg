@@ -1,0 +1,16 @@
+{
+  "name": "ASCEND — Life RPG",
+  "short_name": "ASCEND",
+  "description": "Transform real-life goals and habits into an authentic dark-fantasy RPG progression experience.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#070709",
+  "theme_color": "#8b5cf6",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

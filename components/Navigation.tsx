@@ -2,49 +2,52 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Shield, Compass, Scroll, LogOut } from "lucide-react";
 import LogoutButton from "./LogoutButton";
 
 export default function Navigation() {
   const pathname = usePathname();
 
   const links = [
-    { name: "Dashboard", href: "/dashboard" },
-    { name: "Armory", href: "/armory" },
-    { name: "Chronicle", href: "/chronicle" },
+    { name: "Dashboard", href: "/dashboard", icon: Compass },
+    { name: "Armory", href: "/armory", icon: Shield },
+    { name: "Chronicle", href: "/chronicle", icon: Scroll },
   ];
 
   return (
-    <header className="sticky top-0 z-30 border-b border-neutral-800/80 bg-[#0a0a0c]/80 backdrop-blur-md px-4 py-3.5 md:px-8">
+    <header className="sticky top-0 z-30 border-b border-obsidian-800 bg-obsidian-950/90 backdrop-blur-md px-4 py-3 md:px-8">
       <div className="mx-auto flex max-w-6xl items-center justify-between">
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-8">
           <Link
             href="/dashboard"
-            className="flex items-center gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 rounded-lg"
+            className="flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane rounded-lg"
           >
-            <span className="text-xl font-extrabold tracking-tight text-white">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-obsidian-700 bg-obsidian-900 text-arcane-light font-display font-black text-base shadow-sm">
+              A
+            </div>
+            <span className="font-display font-black text-xl tracking-wider text-white">
               ASCEND
-            </span>
-            <span className="hidden sm:inline-block rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 text-[10px] font-semibold text-indigo-300">
-              LIFE RPG
             </span>
           </Link>
 
-          {/* Navigation Links */}
+          {/* Navigation Links with real Lucide icons */}
           <nav aria-label="Main Navigation" className="flex items-center gap-1 sm:gap-2">
             {links.map((link) => {
+              const Icon = link.icon;
               const isActive = pathname === link.href;
               return (
                 <Link
                   key={link.name}
                   href={link.href}
                   aria-current={isActive ? "page" : undefined}
-                  className={`rounded-lg px-3 py-1.5 text-xs sm:text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
+                  className={`inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs sm:text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane ${
                     isActive
-                      ? "border border-indigo-500/30 bg-indigo-500/15 text-indigo-300 shadow-sm"
-                      : "text-neutral-400 hover:text-white hover:bg-neutral-900/60"
+                      ? "border border-arcane/40 bg-arcane/15 text-arcane-light shadow-sm"
+                      : "text-neutral-400 hover:text-white hover:bg-obsidian-850"
                   }`}
                 >
-                  {link.name}
+                  <Icon className="h-4 w-4" aria-hidden="true" />
+                  <span>{link.name}</span>
                 </Link>
               );
             })}
