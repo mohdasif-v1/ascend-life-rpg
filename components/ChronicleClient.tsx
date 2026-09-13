@@ -31,6 +31,9 @@ const ATTRIBUTE_ICONS: Record<string, React.ComponentType<{ className?: string }
 export default function ChronicleClient() {
   const [history, setHistory] = useState<ChronicleEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saga, setSaga] = useState<string | null>(null);
+  const [sagaLoading, setSagaLoading] = useState(false);
+  const [sagaError, setSagaError] = useState<string | null>(null);
 
   const fetchHistory = useCallback(async () => {
     try {
@@ -50,6 +53,28 @@ export default function ChronicleClient() {
     fetchHistory();
   }, [fetchHistory]);
 
+  async function handleGenerateSaga() {
+    if (sagaLoading) return;
+    setSagaLoading(true);
+    setSagaError(null);
+
+    try {
+      const res = await fetch("/api/quests/saga", { method: "POST" });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setSagaError(data.error || "Failed to generate saga recap.");
+        return;
+      }
+
+      setSaga(data.saga);
+    } catch {
+      setSagaError("Network error contacting the Chronicler. Try again.");
+    } finally {
+      setSagaLoading(false);
+    }
+  }
+
   function formatDate(dateString: string) {
     const d = new Date(dateString);
     return d.toLocaleDateString("en-US", {
@@ -67,18 +92,54 @@ export default function ChronicleClient() {
 
       <main className="mx-auto max-w-4xl px-4 py-8 md:px-8 space-y-8">
         {/* Header Banner */}
-        <div className="border-b border-obsidian-800 pb-6">
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-arcane/40 bg-arcane/15 px-3 py-0.5 text-xs font-semibold text-arcane-light mb-2">
-            <Scroll className="h-3.5 w-3.5" aria-hidden="true" />
-            <span className="font-display font-bold">PERMANENT RECORD</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-obsidian-800 pb-6">
+          <div>
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-arcane/40 bg-arcane/15 px-3 py-0.5 text-xs font-semibold text-arcane-light mb-2">
+              <Scroll className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="font-display font-bold">PERMANENT RECORD</span>
+            </div>
+            <h1 className="font-display font-black text-2xl sm:text-3xl tracking-wide text-white">
+              CHRONICLE OF ASCENSION
+            </h1>
+            <p className="mt-1 text-xs sm:text-sm text-neutral-400">
+              A permanent immutable ledger of completed objectives and personal triumphs
+            </p>
           </div>
-          <h1 className="font-display font-black text-2xl sm:text-3xl tracking-wide text-white">
-            CHRONICLE OF ASCENSION
-          </h1>
-          <p className="mt-1 text-xs sm:text-sm text-neutral-400">
-            A permanent immutable ledger of completed objectives and personal triumphs
-          </p>
+
+          {history.length > 0 && (
+            <button
+              type="button"
+              onClick={handleGenerateSaga}
+              disabled={sagaLoading}
+              className="inline-flex items-center gap-2 self-start sm:self-auto rounded-xl border border-arcane/50 bg-arcane/20 hover:bg-arcane/30 px-4 py-2.5 text-xs sm:text-sm font-display font-bold tracking-wider text-arcane-light shadow-arcane transition focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane-light disabled:opacity-50 active:scale-[0.98]"
+            >
+              <Sparkles className="h-4 w-4 text-arcane-light" aria-hidden="true" />
+              <span>{sagaLoading ? "RECITING SAGA..." : "GENERATE SAGA RECAP"}</span>
+            </button>
+          )}
         </div>
+
+        {/* Saga Recap Banner */}
+        {saga && (
+          <div className="relative overflow-hidden rounded-2xl border border-arcane/50 bg-arcane/15 p-6 backdrop-blur-xl shadow-arcane">
+            <div className="flex items-center gap-2 mb-2 text-xs font-display font-bold uppercase tracking-wider text-arcane-light">
+              <Sparkles className="h-4 w-4" aria-hidden="true" />
+              <span>Chronicler's Saga Recitation</span>
+            </div>
+            <p className="text-sm sm:text-base font-normal leading-relaxed text-neutral-200 italic">
+              "{saga}"
+            </p>
+          </div>
+        )}
+
+        {sagaError && (
+          <div
+            role="alert"
+            className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-300"
+          >
+            {sagaError}
+          </div>
+        )}
 
         {/* Chronicle Entries */}
         {loading ? (
