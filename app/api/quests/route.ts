@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { title, description, category, attribute, difficulty } = body;
+    const { title, description, category, attribute, difficulty, source } = body;
 
     // Validate title
     if (!title || typeof title !== "string" || !title.trim()) {
@@ -77,6 +77,9 @@ export async function POST(req: Request) {
       ? (difficulty as QuestDifficulty)
       : "easy";
 
+    // Validate source ('manual' or 'ai')
+    const validSource: "manual" | "ai" = source === "ai" ? "ai" : "manual";
+
     // Authoritative server-side reward derivation
     const rewards = getQuestRewards(validDifficulty);
 
@@ -92,6 +95,7 @@ export async function POST(req: Request) {
       goldReward: rewards.goldReward,
       completed: false,
       userId: session.user.id,
+      source: validSource,
     });
 
     return NextResponse.json(
