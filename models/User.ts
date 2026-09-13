@@ -20,6 +20,10 @@ export interface IUser extends Document {
   attributes: IUserAttributes;
   aiGenerationsToday: number;
   aiGenerationsResetAt: Date | null;
+  streakStatus: "active" | "ember";
+  emberDeadline: Date | null;
+  preStreakValue: number | null;
+  lastRedemptionAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -80,6 +84,23 @@ const UserSchema = new Schema<IUser>(
       min: 0,
     },
     aiGenerationsResetAt: {
+      type: Date,
+      default: null,
+    },
+    streakStatus: {
+      type: String,
+      enum: ["active", "ember"],
+      default: "active",
+    },
+    emberDeadline: {
+      type: Date,
+      default: null,
+    },
+    preStreakValue: {
+      type: Number,
+      default: null,
+    },
+    lastRedemptionAt: {
       type: Date,
       default: null,
     },
