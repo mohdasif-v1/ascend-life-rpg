@@ -29,6 +29,53 @@ export type ValidatedQuestDraft = z.infer<typeof QuestDraftSchema> & {
   goldReward: number;
 };
 
+export const RedemptionQuestSchema = z.object({
+  title: z.string().min(3).max(80),
+  description: z.string().max(200).default(""),
+  category: z.string().min(2).max(30).default("Discipline"),
+  attribute: z.enum([
+    "strength",
+    "intellect",
+    "vitality",
+    "focus",
+    "discipline",
+  ] as [RPGAttribute, ...RPGAttribute[]]).default("discipline"),
+  difficulty: z.enum(["easy", "medium", "hard", "epic"] as [
+    QuestDifficulty,
+    ...QuestDifficulty[]
+  ]).default("medium"),
+});
+
+export const QuestlineStepDraftSchema = z.object({
+  title: z.string().min(3).max(80),
+  description: z.string().max(200).default(""),
+  category: z.string().min(2).max(30),
+  attribute: z.enum([
+    "strength",
+    "intellect",
+    "vitality",
+    "focus",
+    "discipline",
+  ] as [RPGAttribute, ...RPGAttribute[]]),
+  difficulty: z.enum(["easy", "medium", "hard", "epic"] as [
+    QuestDifficulty,
+    ...QuestDifficulty[]
+  ]),
+});
+
+export const QuestlineDraftArraySchema = z.array(QuestlineStepDraftSchema).min(3).max(7);
+
+export const QuestlineResponseSchema = z.object({
+  title: z.string().min(3).max(80),
+  steps: QuestlineDraftArraySchema,
+});
+
+export type ValidatedQuestlineStepDraft = z.infer<typeof QuestlineStepDraftSchema> & {
+  xpReward: number;
+  goldReward: number;
+  order: number;
+};
+
 export function getGeminiModel() {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -53,3 +100,4 @@ export function cleanAndParseJson(text: string): unknown {
     .trim();
   return JSON.parse(cleaned);
 }
+
