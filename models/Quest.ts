@@ -29,6 +29,7 @@ export interface IQuest extends Document {
   completed: boolean;
   completedAt?: Date | null;
   userId: Types.ObjectId | string;
+  source: "manual" | "ai";
   createdAt: Date;
   updatedAt: Date;
 }
@@ -85,6 +86,11 @@ const QuestSchema = new Schema<IQuest>(
       ref: "User",
       required: true,
       index: true,
+    },
+    source: {
+      type: String,
+      enum: ["manual", "ai"],
+      default: "manual",
     },
   },
   {
