@@ -48,6 +48,8 @@ export async function GET() {
             focus: 0,
             discipline: 0,
           },
+          aiGenerationsToday: user.aiGenerationsToday || 0,
+          aiGenerationsResetAt: user.aiGenerationsResetAt,
           currentLevelBaseXp,
           nextLevelTargetXp,
         },

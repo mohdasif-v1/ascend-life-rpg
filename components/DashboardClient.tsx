@@ -2,11 +2,12 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Sparkles } from "lucide-react";
 import CharacterCard from "@/components/CharacterCard";
 import AttributeBar from "@/components/AttributeBar";
 import QuestCard from "@/components/QuestCard";
 import QuestModal from "@/components/QuestModal";
+import OracleModal from "@/components/OracleModal";
 import CompletionModal, { CompletionData } from "@/components/CompletionModal";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import EmptyState from "@/components/EmptyState";
@@ -25,6 +26,8 @@ interface CharacterProfile {
   attributes: IUserAttributes;
   currentLevelBaseXp: number;
   nextLevelTargetXp: number;
+  aiGenerationsToday?: number;
+  aiGenerationsResetAt?: string | null;
 }
 
 export default function DashboardClient() {
@@ -36,6 +39,7 @@ export default function DashboardClient() {
   const [actionLoading, setActionLoading] = useState(false);
   const [completingId, setCompletingId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [oracleOpen, setOracleOpen] = useState(false);
   const [editingQuest, setEditingQuest] = useState<IQuest | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [completionData, setCompletionData] = useState<CompletionData | null>(null);
@@ -223,14 +227,24 @@ export default function DashboardClient() {
               Execute daily operations, master disciplines, and inspect character status
             </p>
           </div>
-          <button
-            type="button"
-            onClick={openCreateModal}
-            className="inline-flex items-center gap-2 self-start sm:self-auto rounded-xl bg-arcane hover:bg-arcane-dark px-4 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-arcane transition focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane-light active:scale-[0.98]"
-          >
-            <Plus className="h-4 w-4" aria-hidden="true" />
-            <span>FORGE QUEST</span>
-          </button>
+          <div className="flex items-center gap-3 self-start sm:self-auto">
+            <button
+              type="button"
+              onClick={() => setOracleOpen(true)}
+              className="inline-flex items-center gap-2 rounded-xl border border-arcane/50 bg-arcane/20 hover:bg-arcane/30 px-4 py-2.5 text-xs sm:text-sm font-semibold text-arcane-light shadow-arcane transition focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane-light active:scale-[0.98]"
+            >
+              <Sparkles className="h-4 w-4 text-arcane-light" aria-hidden="true" />
+              <span>CONSULT ORACLE</span>
+            </button>
+            <button
+              type="button"
+              onClick={openCreateModal}
+              className="inline-flex items-center gap-2 rounded-xl bg-arcane hover:bg-arcane-dark px-4 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-arcane transition focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane-light active:scale-[0.98]"
+            >
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              <span>FORGE QUEST</span>
+            </button>
+          </div>
         </div>
 
         {/* Error Notification Banner */}
@@ -327,6 +341,15 @@ export default function DashboardClient() {
             : null
         }
         loading={actionLoading}
+      />
+
+      {/* Oracle AI Quest Generation Modal */}
+      <OracleModal
+        isOpen={oracleOpen}
+        onClose={() => setOracleOpen(false)}
+        onQuestsCreated={fetchData}
+        aiGenerationsToday={character?.aiGenerationsToday || 0}
+        dailyLimit={5}
       />
 
       {/* Quest Completion & Level-Up Celebration Modal */}
