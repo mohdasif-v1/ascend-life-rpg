@@ -35,9 +35,8 @@ export function getGeminiModel() {
     throw new Error("GEMINI_API_KEY is not configured in the server environment.");
   }
   const genAI = new GoogleGenerativeAI(apiKey);
-  // Using gemini-1.5-flash or gemini-1.5-pro
   return genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
+    model: "gemini-3.6-flash",
     generationConfig: {
       responseMimeType: "application/json",
       temperature: 0.7,

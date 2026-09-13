@@ -44,7 +44,7 @@ ASCEND transforms daily tasks and self-discipline into a dark-fantasy RPG progre
 - **Level-Up Celebration:** High-impact arcane celebration modal featuring level milestones, sound feedback support, and reduced-motion fallback options.
 - **Armory Economy:** Virtual shop with unique items. Purchases enforce atomic balance verification (`$gte: price`) and atomic gold deduction (`$inc: -price`).
 - **Chronicle History:** Reverse-chronological ledger tracking past quest accomplishments with populated metadata.
-- **AI Oracle Quest Generator:** Converts real-world tasks and ambitions into tailored RPG trials using Google Gemini (`gemini-1.5-flash`). Features server-side Zod validation, retry fallback, and a daily rate limit of 5 requests/day. Drafts are human-reviewed and editable before creation.
+- **AI Oracle Quest Generator:** Converts real-world tasks and ambitions into tailored RPG trials using Google Gemini (`gemini-3.6-flash`). Features server-side Zod validation, retry fallback, and a daily rate limit of 5 requests/day. Drafts are human-reviewed and editable before creation.
 - **AI Saga Mode:** Summarizes recent completed trials from the Chronicle into an in-character narrative recap recited by the Oracle Chronicler.
 - **Accessibility & UX:** Strict keyboard focus rings (`focus-visible:ring-2`), semantic HTML headings, screen-reader descriptions, and zero emojis (100% SVG icon components via `lucide-react`).
 
@@ -52,7 +52,7 @@ ASCEND transforms daily tasks and self-discipline into a dark-fantasy RPG progre
 
 ## AI Features & Security Architecture
 
-ASCEND integrates Google Gemini (`@google/generative-ai` with `gemini-1.5-flash`) designed around zero-trust client principles:
+ASCEND integrates Google Gemini (`@google/generative-ai` with `gemini-3.6-flash`) designed around zero-trust client principles:
 
 1. **Server-Side Key Isolation:** `GEMINI_API_KEY` is strictly server-side. No client ever receives or communicates with the LLM API directly.
 2. **Authoritative Numbers (No Stat Manipulation):** The AI suggests trial concepts, but the server authoritatively derives XP and Gold rewards using `getQuestRewards(difficulty)`. The client cannot manipulate rewards through AI prompt injection.
