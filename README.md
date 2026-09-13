@@ -60,25 +60,40 @@ ASCEND is a full-stack Life RPG application where real-world achievements become
 
 ## Screenshots
 
-| Landing Page | Command Nexus Dashboard |
+| Landing Page | Authentication Gate |
 | :---: | :---: |
-| ![Landing Page](docs/screenshots/landing.png) | ![Command Nexus](docs/screenshots/dashboard.png) |
+| ![Landing Page](docs/screenshots/01-landing.png)<br/>*Landing page with dark fantasy aesthetic and core RPG pillars* | ![Login Gate](docs/screenshots/02-login.png)<br/>*Authentication gateway with NextAuth session security* |
 
-| Level-Up Ascension Modal | Chronicle Ledger & Saga |
+| Command Nexus Dashboard | Level-Up Ascension Modal |
 | :---: | :---: |
-| ![Ascension Modal](docs/screenshots/level_up.png) | ![Chronicle Ledger](docs/screenshots/chronicle.png) |
+| ![Command Nexus](docs/screenshots/03-dashboard.png)<br/>*Command Nexus with character HUD, attributes, and daily objectives* | ![Ascension Modal](docs/screenshots/04-quest-complete.png)<br/>*Signature Level-Up Ascension celebration modal with particle bursts* |
+
+| AI Oracle Quest Generator | Questline Campaign Chain |
+| :---: | :---: |
+| ![Oracle Modal](docs/screenshots/05-oracle.png)<br/>*AI Oracle divining structured quest trials with editable drafts* | ![Questline Chain](docs/screenshots/06-questline.png)<br/>*Decomposed milestone campaign with locked and unlocked progression* |
+
+| Armory Item Vault | Chronicle Ledger & Saga |
+| :---: | :---: |
+| ![Armory Vault](docs/screenshots/07-armory.png)<br/>*Armory vault showcasing treasury balance and stat-boosting relics* | ![Chronicle Ledger](docs/screenshots/08-chronicle.png)<br/>*Immutable heroic history ledger and AI Saga narrative recap* |
+
+<div align="center">
+  <br/>
+  <strong>Mobile Command Nexus (Responsive 390px Viewport)</strong><br/><br/>
+  <img src="docs/screenshots/09-mobile-dashboard.png" alt="Mobile Dashboard View" width="380" />
+  <p><em>Fully responsive mobile drawer navigation and vertically stacked attribute HUD</em></p>
+</div>
 
 ---
 
 ## Architecture
 
 ```mermaid
-flowchart LR
-    A[Browser / Client Components] -->|HTTPS & NextAuth JWT| B[Next.js 14 App Router]
-    B -->|API Routes & Middleware| C[Server Route Handlers]
-    C -->|Authoritative RPG Formulas| D[RPG Engine / lib/rpg.ts]
-    C -->|Mongoose Cached Connection| E[(MongoDB Atlas)]
-    C -->|Zod-Validated Schema Calls| F[Google Gemini API]
+flowchart TD
+    A[Browser / Client Components] -->|HTTPS + NextAuth JWT| B[Next.js 14 App Router]
+    B --> C[Server Route Handlers]
+    C -->|Authoritative RPG Formulas| D[RPG Engine<br/>lib/rpg.ts]
+    C -->|Mongoose| E[(MongoDB Atlas)]
+    C -->|Zod-Validated Calls| F[Google Gemini API]
 ```
 
 ---
