@@ -1,13 +1,16 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useSession } from "next-auth/react";
-import { Plus, X, Sparkles } from "lucide-react";
+import { Plus, X, Sparkles, Compass } from "lucide-react";
 import CharacterCard from "@/components/CharacterCard";
 import AttributeBar from "@/components/AttributeBar";
 import QuestCard from "@/components/QuestCard";
 import QuestModal from "@/components/QuestModal";
 import OracleModal from "@/components/OracleModal";
+import QuestlineModal from "@/components/QuestlineModal";
+import QuestlineChainView, { QuestlineItem } from "@/components/QuestlineChainView";
+import EmberBanner from "@/components/EmberBanner";
 import CompletionModal, { CompletionData } from "@/components/CompletionModal";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import EmptyState from "@/components/EmptyState";
@@ -28,6 +31,10 @@ interface CharacterProfile {
   nextLevelTargetXp: number;
   aiGenerationsToday?: number;
   aiGenerationsResetAt?: string | null;
+  streakStatus?: "active" | "ember";
+  emberDeadline?: string | Date | null;
+  preStreakValue?: number | null;
+  lastRedemptionAt?: string | Date | null;
 }
 
 export default function DashboardClient() {
@@ -35,11 +42,13 @@ export default function DashboardClient() {
 
   const [character, setCharacter] = useState<CharacterProfile | null>(null);
   const [quests, setQuests] = useState<IQuest[]>([]);
+  const [questlines, setQuestlines] = useState<QuestlineItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [completingId, setCompletingId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [oracleOpen, setOracleOpen] = useState(false);
+  const [questlineOpen, setQuestlineOpen] = useState(false);
   const [editingQuest, setEditingQuest] = useState<IQuest | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [completionData, setCompletionData] = useState<CompletionData | null>(null);
@@ -48,11 +57,17 @@ export default function DashboardClient() {
     amount: number;
   } | null>(null);
 
+  const redemptionRef = useRef<HTMLDivElement>(null);
+
   const fetchData = useCallback(async () => {
     try {
-      const [charRes, questsRes] = await Promise.all([
+      // Check streak status first on mount (lazy evaluate & generate redemption quest if broken)
+      await fetch("/api/streak/check").catch(() => null);
+
+      const [charRes, questsRes, questlinesRes] = await Promise.all([
         fetch("/api/user/character"),
         fetch("/api/quests"),
+        fetch("/api/questlines"),
       ]);
 
       if (charRes.ok) {
@@ -63,6 +78,11 @@ export default function DashboardClient() {
       if (questsRes.ok) {
         const questsData = await questsRes.json();
         setQuests(questsData.quests || []);
+      }
+
+      if (questlinesRes.ok) {
+        const qlData = await questlinesRes.json();
+        setQuestlines(qlData.questlines || []);
       }
     } catch (err) {
       console.error("Failed to load dashboard data:", err);
@@ -80,7 +100,17 @@ export default function DashboardClient() {
     setCompletingId(questId);
     setErrorMessage(null);
 
-    const questToComplete = quests.find((q) => String(q._id) === questId);
+    // Look for quest in general list or inside questlines
+    let questToComplete = quests.find((q) => String(q._id) === questId);
+    if (!questToComplete) {
+      for (const ql of questlines) {
+        const match = ql.quests.find((q) => String(q._id) === questId);
+        if (match) {
+          questToComplete = match;
+          break;
+        }
+      }
+    }
 
     try {
       const res = await fetch(`/api/quests/${questId}/complete`, {
@@ -117,8 +147,12 @@ export default function DashboardClient() {
         attributeXp: data.attributeXp || 0,
         attributeValue: data.attributeValue || 0,
         currentStreak: data.currentStreak || 0,
+        isRedemption: Boolean(data.isRedemption),
+        questlineCompleted: Boolean(data.questlineCompleted),
+        questlineTitle: data.questlineTitle || null,
       });
 
+      // Optimistically mark as fulfilled
       setQuests((prevQuests) =>
         prevQuests.map((q) =>
           String(q._id) === questId
@@ -165,7 +199,6 @@ export default function DashboardClient() {
     difficulty: string;
   }) {
     setActionLoading(true);
-    setErrorMessage(null);
     try {
       if (editingQuest) {
         const res = await fetch(`/api/quests/${String(editingQuest._id)}`, {
@@ -204,6 +237,10 @@ export default function DashboardClient() {
     setModalOpen(true);
   }
 
+  function scrollToRedemption() {
+    redemptionRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
+
   if (loading) {
     return (
       <main className="min-h-screen bg-obsidian-950 px-4 py-10 md:px-8 max-w-6xl mx-auto">
@@ -211,6 +248,10 @@ export default function DashboardClient() {
       </main>
     );
   }
+
+  // Filter regular quests vs redemption quest
+  const redemptionQuests = quests.filter((q) => q.isRedemption && !q.completed);
+  const standaloneQuests = quests.filter((q) => !q.isRedemption && !q.questlineId);
 
   return (
     <main className="min-h-screen bg-obsidian-950 text-neutral-100 pb-16 bg-arcane-radial bg-rpg-grid">
@@ -227,11 +268,19 @@ export default function DashboardClient() {
               Execute daily operations, master disciplines, and inspect character status
             </p>
           </div>
-          <div className="flex items-center gap-3 self-start sm:self-auto">
+          <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-auto">
+            <button
+              type="button"
+              onClick={() => setQuestlineOpen(true)}
+              className="inline-flex items-center gap-2 rounded-xl border border-arcane/40 bg-obsidian-900 hover:bg-obsidian-800 px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-neutral-200 shadow-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane active:scale-[0.98]"
+            >
+              <Compass className="h-4 w-4 text-arcane-light" aria-hidden="true" />
+              <span>FORGE QUESTLINE</span>
+            </button>
             <button
               type="button"
               onClick={() => setOracleOpen(true)}
-              className="inline-flex items-center gap-2 rounded-xl border border-arcane/50 bg-arcane/20 hover:bg-arcane/30 px-4 py-2.5 text-xs sm:text-sm font-semibold text-arcane-light shadow-arcane transition focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane-light active:scale-[0.98]"
+              className="inline-flex items-center gap-2 rounded-xl border border-arcane/50 bg-arcane/20 hover:bg-arcane/30 px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-arcane-light shadow-arcane transition focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane-light active:scale-[0.98]"
             >
               <Sparkles className="h-4 w-4 text-arcane-light" aria-hidden="true" />
               <span>CONSULT ORACLE</span>
@@ -266,6 +315,15 @@ export default function DashboardClient() {
           </div>
         )}
 
+        {/* Task 8: Sacred Ember Forgiveness Banner */}
+        {character?.streakStatus === "ember" && (
+          <EmberBanner
+            emberDeadline={character.emberDeadline || null}
+            preStreakValue={character.preStreakValue || null}
+            onScrollToRedemption={scrollToRedemption}
+          />
+        )}
+
         {/* Character Card HUD */}
         {character && (
           <CharacterCard
@@ -287,7 +345,42 @@ export default function DashboardClient() {
           />
         )}
 
-        {/* Quests Section */}
+        {/* Featured Redemption Quests */}
+        {redemptionQuests.length > 0 && (
+          <div ref={redemptionRef} className="space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="font-display font-black text-xs uppercase tracking-widest text-amber-400">
+                SACRED REDEMPTION TRIAL
+              </span>
+              <span className="text-xs text-neutral-400 font-mono">
+                Rekindle before midnight UTC
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {redemptionQuests.map((quest) => (
+                <QuestCard
+                  key={String(quest._id)}
+                  quest={quest}
+                  onComplete={handleCompleteQuest}
+                  onEdit={openEditModal}
+                  onDelete={handleDeleteQuest}
+                  isCompleting={completingId === String(quest._id)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Task 9: Questline Campaigns Visual Chain */}
+        {questlines.length > 0 && (
+          <QuestlineChainView
+            questlines={questlines}
+            onCompleteQuest={handleCompleteQuest}
+            completingId={completingId}
+          />
+        )}
+
+        {/* Quests Section (Standalone Quests) */}
         <section aria-label="Active Quests" className="space-y-4">
           <div className="flex items-center justify-between border-b border-obsidian-800 pb-3">
             <div>
@@ -299,16 +392,16 @@ export default function DashboardClient() {
               </p>
             </div>
             <span className="text-xs font-mono text-neutral-400">
-              {quests.filter((q) => !q.completed).length} Pending /{" "}
-              {quests.length} Total
+              {standaloneQuests.filter((q) => !q.completed).length} Pending /{" "}
+              {standaloneQuests.length} Total
             </span>
           </div>
 
-          {quests.length === 0 ? (
+          {standaloneQuests.length === 0 ? (
             <EmptyState onCreateClick={openCreateModal} />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {quests.map((quest) => (
+              {standaloneQuests.map((quest) => (
                 <QuestCard
                   key={String(quest._id)}
                   quest={quest}
@@ -352,7 +445,16 @@ export default function DashboardClient() {
         dailyLimit={5}
       />
 
-      {/* Quest Completion & Level-Up Celebration Modal */}
+      {/* Questline AI Generation & Decompose Modal */}
+      <QuestlineModal
+        isOpen={questlineOpen}
+        onClose={() => setQuestlineOpen(false)}
+        onQuestlineCreated={fetchData}
+        aiGenerationsToday={character?.aiGenerationsToday || 0}
+        dailyLimit={5}
+      />
+
+      {/* Quest Completion & Level-Up / Questline Celebration Modal */}
       <CompletionModal
         isOpen={Boolean(completionData)}
         onClose={() => setCompletionData(null)}
