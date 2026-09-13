@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { Shield, Coins, Check, X, Sparkles } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { IItem } from "@/models/Item";
@@ -164,8 +165,22 @@ export default function ArmoryClient() {
             ))}
           </div>
         ) : items.length === 0 ? (
-          <div className="rounded-2xl border border-obsidian-800 bg-obsidian-900/40 p-12 text-center">
-            <p className="text-neutral-400">The armory is currently empty.</p>
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-obsidian-750 bg-obsidian-900/30 p-12 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-obsidian-700 bg-obsidian-850 text-arcane-light mb-4 shadow-sm">
+              <Shield className="h-7 w-7" aria-hidden="true" />
+            </div>
+            <h3 className="font-display font-bold text-lg tracking-wide text-white">
+              VAULT RE-SUPPLYING
+            </h3>
+            <p className="mt-1 text-xs sm:text-sm text-neutral-400 max-w-sm">
+              The Guild weaponsmiths are forging new relics. Check back after your next trial completion.
+            </p>
+            <Link
+              href="/dashboard"
+              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-arcane hover:bg-arcane-dark px-5 py-2.5 text-xs font-display font-bold tracking-wider text-white shadow-arcane transition focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane-light active:scale-[0.98]"
+            >
+              RETURN TO COMMAND NEXUS
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
