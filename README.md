@@ -45,6 +45,11 @@ ASCEND transforms daily tasks and self-discipline into a dark-fantasy RPG progre
 - **Armory Economy:** Virtual shop with unique items. Purchases enforce atomic balance verification (`$gte: price`) and atomic gold deduction (`$inc: -price`).
 - **Chronicle History:** Reverse-chronological ledger tracking past quest accomplishments with populated metadata.
 - **AI Oracle Quest Generator:** Converts real-world tasks and ambitions into tailored RPG trials using Google Gemini (`gemini-3.6-flash`). Features server-side Zod validation, retry fallback, and a daily rate limit of 5 requests/day. Drafts are human-reviewed and editable before creation.
+- **Redemption Quests (Sacred Ember Streak Forgiveness):** Directly answers the classic behavioral pitfall where one missed day resets a streak to zero and causes abandonment. If a user misses exactly one day with a streak $\ge 2$, their status transitions to `ember` with a countdown to midnight UTC. Completing the generated narrative Redemption Quest restores their full streak counter (`preStreakValue + 1`) with an extra bonus (+25 XP, +15 Gold).
+  - *Abuse Guard:* Deliberately capped to at most once per 7 days per user (`lastRedemptionAt`), ensuring forgiveness remains a rare salvation rather than consequence-free negligence.
+- **Questlines (Chained Progressive Decomposition):** Turns large, overwhelming ambitions into an ordered, escalating chain of 3–5 milestone quests. Built with genuine task decomposition and RPG depth (skill-tree style sequential unlocking).
+  - *Server-Enforced Locking:* Quests beyond Step 1 start locked (`locked: true`). Calling the completion endpoint on a locked step strictly returns `403 Forbidden`. Finishing a step automatically unlocks the next step in the sequence.
+  - *Campaign Bonus:* Fulfilling the final trial marks the Questline `completed` and unlocks a celebratory Campaign Conquered modal awarding a grand bonus of `+200 XP` and `+100 Gold`.
 - **AI Saga Mode:** Summarizes recent completed trials from the Chronicle into an in-character narrative recap recited by the Oracle Chronicler.
 - **Accessibility & UX:** Strict keyboard focus rings (`focus-visible:ring-2`), semantic HTML headings, screen-reader descriptions, and zero emojis (100% SVG icon components via `lucide-react`).
 
@@ -54,11 +59,13 @@ ASCEND transforms daily tasks and self-discipline into a dark-fantasy RPG progre
 
 ASCEND integrates Google Gemini (`@google/generative-ai` with `gemini-3.6-flash`) designed around zero-trust client principles:
 
-1. **Server-Side Key Isolation:** `GEMINI_API_KEY` is strictly server-side. No client ever receives or communicates with the LLM API directly.
-2. **Authoritative Numbers (No Stat Manipulation):** The AI suggests trial concepts, but the server authoritatively derives XP and Gold rewards using `getQuestRewards(difficulty)`. The client cannot manipulate rewards through AI prompt injection.
-3. **Strict Validation & Retries:** AI responses must conform to strict JSON schemas parsed through `Zod`. If an output is malformed, the server performs an automatic single retry with strict formatting constraints; if still invalid, a graceful error is returned.
-4. **Human Review Before Persistence:** AI quest drafts are never auto-inserted into the database. Players review, edit titles or tactical instructions, and explicitly confirm which trials to forge into their active quest log.
-5. **Per-User Rate Limiting:** Daily generation quota is tracked on the user document (`aiGenerationsToday`, `aiGenerationsResetAt`) and capped at 5 divinations every 24 hours to prevent abuse and protect API resources.
+1. **Server-Side Key Isolation:** `GEMINI_API_KEY` is strictly server-side. No client ever receives or communicates with the LLM API directly. No new environment variables are needed as existing credentials and AI infrastructure are fully reused.
+2. **Authoritative Numbers (No Stat Manipulation):** The AI suggests trial concepts and escalating step progressions, but the server authoritatively derives XP and Gold rewards using `getQuestRewards(difficulty)`. The client cannot manipulate rewards or progression state through AI prompt injection.
+3. **Strict Validation & Retries:** AI responses must conform to strict JSON schemas parsed through `Zod` (`QuestDraftsArraySchema`, `QuestlineGeminiSchema`, `RedemptionQuestSchema`). If an output is malformed, the server performs an automatic single retry with strict formatting constraints; if still invalid, a graceful fallback is provided.
+4. **Human Review Before Persistence:** AI quest drafts and questlines are never auto-inserted into the database. Players review, reorder, edit titles or tactical instructions, and explicitly confirm which trials to forge into their active quest log.
+5. **Shared Per-User Rate Limiting:** Daily generation quota is tracked on the user document (`aiGenerationsToday`, `aiGenerationsResetAt`) and capped at 5 divinations every 24 hours across Oracle quests and Questlines to prevent abuse and protect API resources.
+6. **Server-Side Locked Quest Enforcement:** Sequential questlines enforce step unlocking server-side. Direct API completion requests for locked quests are rejected with `403 Forbidden`.
+7. **Redemption Abuse Guard:** Users can only invoke the Sacred Ember streak-redemption mechanic once every 7 days (`lastRedemptionAt`), preventing users from bypassing daily habit discipline.
 
 ---
 
@@ -119,8 +126,9 @@ ASCEND models data using Mongoose schemas defined in `/models`:
 
 | Collection | Model File | Key Fields | Indexes & Constraints |
 | :--- | :--- | :--- | :--- |
-| **`users`** | [`models/User.ts`](models/User.ts) | `email`, `passwordHash`, `level`, `xp`, `gold`, `currentStreak`, `longestStreak`, `lastActivityDate`, `attributes` (`strength`, `intellect`, `vitality`, `focus`, `discipline`) | Unique index on `email`. Min bounds on stats. |
-| **`quests`** | [`models/Quest.ts`](models/Quest.ts) | `title`, `description`, `category`, `attribute`, `difficulty`, `xpReward`, `goldReward`, `completed`, `completedAt`, `userId` | Compound index on `{ userId: 1, createdAt: -1 }`. Foreign key reference to `User`. |
+| **`users`** | [`models/User.ts`](models/User.ts) | `email`, `passwordHash`, `level`, `xp`, `gold`, `currentStreak`, `longestStreak`, `lastActivityDate`, `attributes`, `streakStatus` (`'active'` \| `'ember'`), `emberDeadline`, `preStreakValue`, `lastRedemptionAt`, `aiGenerationsToday`, `aiGenerationsResetAt` | Unique index on `email`. Min bounds on stats. |
+| **`quests`** | [`models/Quest.ts`](models/Quest.ts) | `title`, `description`, `category`, `attribute`, `difficulty`, `xpReward`, `goldReward`, `completed`, `completedAt`, `userId`, `source`, `isRedemption`, `expiresAt`, `questlineId`, `order`, `locked` | Compound index on `{ userId: 1, createdAt: -1 }`. Foreign key reference to `User` and `Questline`. |
+| **`questlines`** | [`models/Questline.ts`](models/Questline.ts) | `userId`, `title`, `goal`, `status` (`'active'` \| `'completed'` \| `'abandoned'`), `createdAt` | Index on `userId` and `status`. Chained quest container. |
 | **`questcompletions`** | [`models/QuestCompletion.ts`](models/QuestCompletion.ts) | `questId`, `userId`, `xpEarned`, `goldEarned`, `attribute`, `attributeXp`, `completedAt` | Compound index on `{ userId: 1, completedAt: -1 }`. |
 | **`items`** | [`models/Item.ts`](models/Item.ts) | `name`, `description`, `price`, `type`, `attributeBonus` (`strength`, `intellect`, `vitality`, `focus`, `discipline`) | Unique index on `name`. Types: Relic, Armor, Tome, Artifact, Accessory. |
 | **`inventoryitems`** | [`models/InventoryItem.ts`](models/InventoryItem.ts) | `userId`, `itemId`, `quantity`, `purchasedAt` | Compound unique index on `{ userId: 1, itemId: 1 }` preventing duplicate acquisitions. |
