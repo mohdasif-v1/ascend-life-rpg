@@ -87,7 +87,7 @@ export default function EmberBanner({
             <button
               type="button"
               onClick={onScrollToRedemption}
-              className="inline-flex items-center gap-1 text-xs font-bold font-display uppercase tracking-wider text-amber-300 hover:text-amber-200 transition"
+              className="inline-flex items-center gap-1.5 min-h-[38px] px-2.5 py-1 rounded-lg text-xs font-bold font-display uppercase tracking-wider text-amber-300 hover:text-amber-200 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 active:scale-[0.98]"
             >
               <span>View Redemption Quest</span>
               <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
