@@ -3,10 +3,34 @@
   <rect x="2" y="2" width="1196" height="626" stroke="#272738" stroke-width="2"/>
   <circle cx="600" cy="180" r="320" fill="#8b5cf6" fill-opacity="0.12" filter="blur(80px)"/>
 
-  <!-- Sigil Icon -->
-  <g transform="translate(540, 100) scale(1.8)">
-    <path d="M32 8L50 48H39L32 30L25 48H14L32 8Z" fill="#8b5cf6" stroke="#c4b5fd" stroke-width="1.5"/>
-    <polygon points="32,20 36,36 28,36" fill="#f59e0b"/>
+  <!-- Sigil Icon matching Logo.tsx & icon.svg -->
+  <g transform="translate(540, 80) scale(1.9)">
+    <defs>
+      <linearGradient id="og-blade-grad" x1="12" y1="8" x2="52" y2="48" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#c4b5fd"/>
+        <stop offset="0.4" stop-color="#8b5cf6"/>
+        <stop offset="1" stop-color="#4c1d95"/>
+      </linearGradient>
+      <linearGradient id="og-core-grad" x1="26.5" y1="22" x2="37.5" y2="38" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#fbbf24"/>
+        <stop offset="1" stop-color="#d97706"/>
+      </linearGradient>
+    </defs>
+    <path
+      d="M32 8L52 48H41.5L32 28.5L22.5 48H12L32 8Z"
+      fill="url(#og-blade-grad)"
+      stroke="#c4b5fd"
+      stroke-width="1.6"
+      stroke-linejoin="round"
+    />
+    <polygon
+      points="32,22 37.5,38 26.5,38"
+      fill="url(#og-core-grad)"
+      stroke="#fef3c7"
+      stroke-width="1"
+      stroke-linejoin="round"
+    />
+    <circle cx="32" cy="15" r="2.5" fill="#ffffff"/>
   </g>
 
   <!-- Typography -->

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Shield, Compass, Scroll, LogOut } from "lucide-react";
 import LogoutButton from "./LogoutButton";
+import Logo from "./Logo";
 
 export default function Navigation() {
   const pathname = usePathname();
@@ -20,11 +21,9 @@ export default function Navigation() {
         <div className="flex items-center gap-8">
           <Link
             href="/dashboard"
-            className="flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane rounded-lg"
+            className="flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane rounded-lg py-1 px-1.5 -ml-1.5 transition hover:opacity-90"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-obsidian-700 bg-obsidian-900 text-arcane-light font-display font-black text-base shadow-sm">
-              A
-            </div>
+            <Logo size={28} variant="accent" />
             <span className="font-display font-black text-xl tracking-wider text-white">
               ASCEND
             </span>

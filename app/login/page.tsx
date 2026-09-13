@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import Logo from "@/components/Logo";
 
 function LoginForm() {
   const router = useRouter();
@@ -49,8 +50,8 @@ function LoginForm() {
           href="/"
           className="inline-flex flex-col items-center gap-2 group focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane rounded-xl p-1"
         >
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-obsidian-750 bg-obsidian-850 font-display font-black text-lg text-arcane-light shadow-sm transition group-hover:border-arcane/50 group-hover:shadow-arcane">
-            A
+          <div className="flex items-center justify-center transition group-hover:scale-105">
+            <Logo size={44} variant="accent" />
           </div>
           <span className="font-display font-black text-2xl tracking-wider text-white">
             ASCEND
