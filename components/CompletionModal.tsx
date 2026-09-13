@@ -16,6 +16,9 @@ export interface CompletionData {
   attributeXp: number;
   attributeValue: number;
   currentStreak: number;
+  isRedemption?: boolean;
+  questlineCompleted?: boolean;
+  questlineTitle?: string | null;
 }
 
 interface CompletionModalProps {
@@ -67,6 +70,9 @@ export default function CompletionModal({
       color: "text-arcane-light",
     };
 
+  const isQuestlineFinish = Boolean(data.questlineCompleted);
+  const isRedemptionQuest = Boolean(data.isRedemption);
+
   return (
     <div
       role="dialog"
@@ -74,7 +80,7 @@ export default function CompletionModal({
       aria-labelledby="completion-modal-title"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 px-4 backdrop-blur-md"
     >
-      {data.leveledUp && (
+      {(data.leveledUp || isQuestlineFinish) && (
         <div
           aria-hidden="true"
           className="pointer-events-none fixed inset-0 bg-arcane/20 animate-asc-flash z-10"
@@ -84,33 +90,55 @@ export default function CompletionModal({
       {/* Modal Container */}
       <div
         className={`relative w-full max-w-md overflow-hidden rounded-2xl border bg-obsidian-900 p-6 md:p-8 text-center animate-asc-modal ${
-          data.leveledUp
+          isQuestlineFinish
+            ? "border-relic-gold shadow-2xl ring-2 ring-relic-gold/40 animate-asc-glow"
+            : data.leveledUp
             ? "border-arcane shadow-arcane-lg animate-asc-glow"
+            : isRedemptionQuest
+            ? "border-amber-500/60 shadow-amber-950/40 shadow-2xl"
             : "border-obsidian-750 shadow-2xl"
         }`}
       >
-        {data.leveledUp && <LevelUpParticles />}
+        {(data.leveledUp || isQuestlineFinish) && <LevelUpParticles />}
 
         {/* Ambient Top Glow */}
         <div
           aria-hidden="true"
           className={`pointer-events-none absolute -top-20 left-1/2 h-44 w-72 -translate-x-1/2 rounded-full blur-3xl ${
-            data.leveledUp ? "bg-arcane/35" : "bg-relic-emerald/15"
+            isQuestlineFinish
+              ? "bg-relic-gold/30"
+              : data.leveledUp
+              ? "bg-arcane/35"
+              : isRedemptionQuest
+              ? "bg-amber-500/25"
+              : "bg-relic-emerald/15"
           }`}
         />
 
         {/* Screen Reader Live Region */}
         <div className="sr-only" aria-live="polite">
-          {data.leveledUp
+          {isQuestlineFinish
+            ? `Questline Campaign Conquered: ${data.questlineTitle || ""}. Earned ${data.xpEarned} XP and ${data.goldEarned} Gold.`
+            : data.leveledUp
             ? `Ascended to Level ${data.newLevel}. Quest completed: ${data.questTitle}. Earned ${data.xpEarned} XP and ${data.goldEarned} Gold.`
             : `Quest completed: ${data.questTitle}. Earned ${data.xpEarned} XP and ${data.goldEarned} Gold.`}
         </div>
 
         {/* Category / Status Pill */}
-        {data.leveledUp ? (
+        {isQuestlineFinish ? (
+          <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-relic-gold/60 bg-relic-gold/20 px-3.5 py-1 text-xs font-semibold tracking-wider text-relic-gold animate-asc-badge">
+            <Sparkles className="h-3.5 w-3.5 text-relic-gold" aria-hidden="true" />
+            <span className="font-display font-bold">CAMPAIGN CONQUERED</span>
+          </div>
+        ) : data.leveledUp ? (
           <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-arcane/50 bg-arcane/20 px-3.5 py-1 text-xs font-semibold tracking-wider text-arcane-light animate-asc-badge">
             <Sparkles className="h-3.5 w-3.5 text-arcane-light" aria-hidden="true" />
             <span className="font-display font-bold">ASCENDED</span>
+          </div>
+        ) : isRedemptionQuest ? (
+          <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-500/20 px-3.5 py-1 text-xs font-semibold tracking-wider text-amber-300">
+            <Sparkles className="h-3.5 w-3.5 text-amber-400" aria-hidden="true" />
+            <span className="font-display font-bold">EMBER REKINDLED</span>
           </div>
         ) : (
           <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-relic-emerald/40 bg-relic-emerald/10 px-3.5 py-1 text-xs font-semibold tracking-wider text-emerald-300">
@@ -124,10 +152,22 @@ export default function CompletionModal({
           id="completion-modal-title"
           className="font-display font-black text-2xl sm:text-3xl tracking-wide text-white"
         >
-          {data.leveledUp ? "RANK ASCENSION" : "OBJECTIVE FULFILLED"}
+          {isQuestlineFinish
+            ? "QUESTLINE COMPLETE"
+            : data.leveledUp
+            ? "RANK ASCENSION"
+            : isRedemptionQuest
+            ? "CONTINUITY RESTORED"
+            : "OBJECTIVE FULFILLED"}
         </h2>
 
-        {/* Level Hero Number */}
+        {/* Level / Campaign Subtitle Hero */}
+        {isQuestlineFinish && data.questlineTitle && (
+          <div className="mt-2 font-display font-bold text-lg text-amber-200">
+            {data.questlineTitle}
+          </div>
+        )}
+
         {data.leveledUp && (
           <div className="mt-2 font-display font-black text-4xl sm:text-5xl tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-arcane-light via-white to-sky-300 drop-shadow-sm">
             LEVEL {data.newLevel}
