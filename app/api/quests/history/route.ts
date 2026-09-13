@@ -19,7 +19,7 @@ export async function GET() {
 
     const history = await QuestCompletion.find({ userId: session.user.id })
       .sort({ completedAt: -1 })
-      .populate("questId", "title category difficulty")
+      .populate("questId", "title category difficulty source")
       .lean();
 
     return NextResponse.json(

@@ -1,5 +1,5 @@
 import React from "react";
-import { Swords, Brain, Heart, Crosshair, Shield, Check, Trash2, Edit2, Zap, Coins } from "lucide-react";
+import { Swords, Brain, Heart, Crosshair, Shield, Check, Trash2, Edit2, Zap, Coins, Sparkles } from "lucide-react";
 import { IQuest } from "@/models/Quest";
 
 interface QuestCardProps {
@@ -57,11 +57,19 @@ export default function QuestCard({
             </span>
           </div>
 
-          <span
-            className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider ${diffStyle}`}
-          >
-            {quest.difficulty}
-          </span>
+          <div className="flex items-center gap-2">
+            {quest.source === "ai" && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-arcane/50 bg-arcane/20 px-2.5 py-0.5 text-[10px] font-bold text-arcane-light shadow-sm">
+                <Sparkles className="h-3 w-3 text-arcane-light" aria-hidden="true" />
+                <span>AI-FORGED</span>
+              </span>
+            )}
+            <span
+              className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider ${diffStyle}`}
+            >
+              {quest.difficulty}
+            </span>
+          </div>
         </div>
 
         {/* Quest Title */}

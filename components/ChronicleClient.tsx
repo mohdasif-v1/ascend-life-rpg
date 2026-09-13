@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Scroll, CheckCircle2, Zap, Coins, Swords, Brain, Heart, Crosshair, Shield } from "lucide-react";
+import { Scroll, CheckCircle2, Zap, Coins, Swords, Brain, Heart, Crosshair, Shield, Sparkles } from "lucide-react";
 import Navigation from "@/components/Navigation";
 
 interface ChronicleEntry {
@@ -11,6 +11,7 @@ interface ChronicleEntry {
     title: string;
     category: string;
     difficulty: string;
+    source?: "manual" | "ai";
   } | null;
   xpEarned: number;
   goldEarned: number;
@@ -124,6 +125,12 @@ export default function ChronicleClient() {
                         <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
                         <span>Fulfilled</span>
                       </span>
+                      {entry.questId?.source === "ai" && (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-arcane/40 bg-arcane/15 px-2 py-0.5 text-[10px] font-bold text-arcane-light">
+                          <Sparkles className="h-2.5 w-2.5 text-arcane-light" aria-hidden="true" />
+                          <span>AI-FORGED</span>
+                        </span>
+                      )}
                       <span className="text-obsidian-700 font-bold">•</span>
                       <time className="text-xs font-mono text-neutral-500">
                         {formatDate(entry.completedAt)}
