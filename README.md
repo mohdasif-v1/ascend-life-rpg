@@ -9,7 +9,7 @@ Transform daily habits, real-world productivity, and discipline into a dark-fant
 [![Google Gemini](https://img.shields.io/badge/Google_Gemini-3.6--flash-4285F4?style=flat&logo=google)](https://ai.google.dev/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-[Live Demo](https://ascendliferpg.mohdasifv1.dev) | [GitHub Repository](https://github.com/mohdasif-v1/ascend-life-rpg) | [Watch Demo Video](PASTE_GOOGLE_DRIVE_LINK_HERE)
+[Live Demo](https://ascendliferpg.mohdasifv1.dev) | [GitHub Repository](https://github.com/mohdasif-v1/ascend-life-rpg) | [Watch Demo Video](https://drive.google.com/file/d/17iRIHV34MxUZvH7ZaoTiV5N5TiI-lS83/view?usp=drive_link)
 
 ---
 
@@ -244,9 +244,7 @@ To review the application's core progression flow in under 3 minutes:
 
 The final demonstration video complies with submission requirements (approx. 120 seconds):
 
-[Watch the Demo Video](PASTE_GOOGLE_DRIVE_LINK_HERE)
-
-> Note: Replace `PASTE_GOOGLE_DRIVE_LINK_HERE` with your shared Google Drive link before final submission.
+[Watch the Demo Video](https://drive.google.com/file/d/17iRIHV34MxUZvH7ZaoTiV5N5TiI-lS83/view?usp=drive_link)
 
 ---
 
@@ -378,7 +376,3 @@ interface IQuestCompletion {
 </details>
 
 ---
-
-## License
-
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
