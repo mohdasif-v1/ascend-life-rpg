@@ -32,6 +32,9 @@ export interface IQuest extends Document {
   source: "manual" | "ai";
   isRedemption: boolean;
   expiresAt: Date | null;
+  questlineId?: Types.ObjectId | string | null;
+  order?: number | null;
+  locked: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -104,6 +107,21 @@ const QuestSchema = new Schema<IQuest>(
       default: null,
       index: true,
     },
+    questlineId: {
+      type: Schema.Types.ObjectId,
+      ref: "Questline",
+      default: null,
+      index: true,
+    },
+    order: {
+      type: Number,
+      default: null,
+    },
+    locked: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
   },
   {
     timestamps: true,
@@ -112,6 +130,7 @@ const QuestSchema = new Schema<IQuest>(
 
 // Compound index for fast queries by user and creation date
 QuestSchema.index({ userId: 1, createdAt: -1 });
+QuestSchema.index({ questlineId: 1, order: 1 });
 
 const Quest: Model<IQuest> =
   mongoose.models.Quest || mongoose.model<IQuest>("Quest", QuestSchema);
