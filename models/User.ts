@@ -18,6 +18,8 @@ export interface IUser extends Document {
   longestStreak: number;
   lastActivityDate: Date | null;
   attributes: IUserAttributes;
+  aiGenerationsToday: number;
+  aiGenerationsResetAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -71,6 +73,15 @@ const UserSchema = new Schema<IUser>(
       vitality: { type: Number, default: 0, min: 0 },
       focus: { type: Number, default: 0, min: 0 },
       discipline: { type: Number, default: 0, min: 0 },
+    },
+    aiGenerationsToday: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    aiGenerationsResetAt: {
+      type: Date,
+      default: null,
     },
   },
   {
