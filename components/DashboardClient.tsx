@@ -51,6 +51,7 @@ export default function DashboardClient() {
   const [questlineOpen, setQuestlineOpen] = useState(false);
   const [editingQuest, setEditingQuest] = useState<IQuest | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [completionData, setCompletionData] = useState<CompletionData | null>(null);
   const [attributeBump, setAttributeBump] = useState<{
     attribute: string;
@@ -58,6 +59,11 @@ export default function DashboardClient() {
   } | null>(null);
 
   const redemptionRef = useRef<HTMLDivElement>(null);
+
+  const showSuccess = (msg: string) => {
+    setSuccessMessage(msg);
+    setTimeout(() => setSuccessMessage(null), 4000);
+  };
 
   const fetchData = useCallback(async () => {
     try {
@@ -182,6 +188,7 @@ export default function DashboardClient() {
         method: "DELETE",
       });
       if (res.ok) {
+        showSuccess("Quest removed from active objectives.");
         await fetchData();
       } else {
         setErrorMessage("Failed to delete quest.");
@@ -210,6 +217,7 @@ export default function DashboardClient() {
         if (!res.ok) {
           throw new Error(data.error || "Failed to update quest");
         }
+        showSuccess("Quest modifications sealed.");
       } else {
         const res = await fetch("/api/quests", {
           method: "POST",
@@ -220,6 +228,7 @@ export default function DashboardClient() {
         if (!res.ok) {
           throw new Error(data.error || "Failed to create quest");
         }
+        showSuccess("New quest forged into Command Nexus.");
       }
       await fetchData();
     } finally {
@@ -295,6 +304,25 @@ export default function DashboardClient() {
             </button>
           </div>
         </div>
+
+        {/* Success Notification Banner */}
+        {successMessage && (
+          <div
+            role="status"
+            aria-live="polite"
+            className="flex items-center justify-between rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-sm font-medium text-emerald-300 backdrop-blur-md animate-asc-modal"
+          >
+            <span>{successMessage}</span>
+            <button
+              type="button"
+              onClick={() => setSuccessMessage(null)}
+              aria-label="Dismiss confirmation notification"
+              className="text-xs text-emerald-400 hover:text-white p-1 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+            >
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+        )}
 
         {/* Error Notification Banner */}
         {errorMessage && (
@@ -440,7 +468,10 @@ export default function DashboardClient() {
       <OracleModal
         isOpen={oracleOpen}
         onClose={() => setOracleOpen(false)}
-        onQuestsCreated={fetchData}
+        onQuestsCreated={async () => {
+          showSuccess("Oracle trials bound to your active quest roster.");
+          await fetchData();
+        }}
         aiGenerationsToday={character?.aiGenerationsToday || 0}
         dailyLimit={5}
       />
@@ -449,7 +480,10 @@ export default function DashboardClient() {
       <QuestlineModal
         isOpen={questlineOpen}
         onClose={() => setQuestlineOpen(false)}
-        onQuestlineCreated={fetchData}
+        onQuestlineCreated={async () => {
+          showSuccess("Questline campaign bound to Command Nexus.");
+          await fetchData();
+        }}
         aiGenerationsToday={character?.aiGenerationsToday || 0}
         dailyLimit={5}
       />
