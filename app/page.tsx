@@ -1,5 +1,11 @@
 import Link from "next/link";
 import { Compass, Shield, Zap } from "lucide-react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "ASCEND — Turn Real Life Into an RPG",
+  description: "Transform daily habits, real-world productivity, and discipline into a dark-fantasy RPG progression system.",
+};
 
 export default function HomePage() {
   return (
