@@ -47,8 +47,16 @@ export default function QuestlineModal({
     if (isOpen) {
       setRemaining(Math.max(0, dailyLimit - aiGenerationsToday));
       setError(null);
+
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          onClose();
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
     }
-  }, [isOpen, aiGenerationsToday, dailyLimit]);
+  }, [isOpen, aiGenerationsToday, dailyLimit, onClose]);
 
   if (!isOpen) return null;
 

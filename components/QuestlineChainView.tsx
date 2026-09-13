@@ -162,7 +162,8 @@ export default function QuestlineChainView({
                               type="button"
                               onClick={() => onCompleteQuest(String(quest._id))}
                               disabled={completingId === String(quest._id)}
-                              className="rounded-lg bg-arcane hover:bg-arcane-dark px-2.5 py-1 text-[11px] font-bold text-white shadow-sm transition disabled:opacity-50"
+                              aria-label={`Conquer step: ${quest.title}`}
+                              className="rounded-lg bg-arcane hover:bg-arcane-dark px-3 py-1.5 min-h-[36px] min-w-[70px] text-xs font-display font-bold tracking-wider text-white shadow-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-arcane-light disabled:opacity-50 active:scale-[0.97]"
                             >
                               {completingId === String(quest._id) ? "..." : "Conquer"}
                             </button>
