@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 import Quest from "@/models/Quest";
 import User from "@/models/User";
+import Questline from "@/models/Questline";
 import QuestCompletion from "@/models/QuestCompletion";
 import {
   calculateNewStreak,
@@ -46,6 +47,14 @@ export async function POST(req: Request, { params }: RouteParams) {
       );
     }
 
+    // Task 7: Reject completion if quest is locked in a questline sequence
+    if (quest.locked) {
+      return NextResponse.json(
+        { error: "Forbidden: This quest is locked. Complete the prior quests in the questline first." },
+        { status: 403 }
+      );
+    }
+
     if (quest.completed) {
       return NextResponse.json(
         { error: "Quest is already completed" },
@@ -55,12 +64,21 @@ export async function POST(req: Request, { params }: RouteParams) {
 
     const now = new Date();
 
+    // If it's a redemption quest, verify it hasn't expired
+    if (quest.isRedemption && quest.expiresAt && now > new Date(quest.expiresAt)) {
+      return NextResponse.json(
+        { error: "This redemption quest has expired. The ember has gone cold." },
+        { status: 410 }
+      );
+    }
+
     // CRITICAL: Atomic transition incomplete -> complete to prevent race conditions / double-completion
     const updatedQuest = await Quest.findOneAndUpdate(
       {
         _id: questId,
         userId: session.user.id,
         completed: false,
+        locked: { $ne: true },
       },
       {
         $set: {
@@ -73,22 +91,55 @@ export async function POST(req: Request, { params }: RouteParams) {
 
     if (!updatedQuest) {
       return NextResponse.json(
-        { error: "Quest was already completed or concurrently modified" },
+        { error: "Quest was already completed, locked, or concurrently modified" },
         { status: 409 }
       );
     }
 
     // Server-authoritative rewards directly from DB record
-    const xpReward = updatedQuest.xpReward;
-    const goldReward = updatedQuest.goldReward;
+    let xpReward = updatedQuest.xpReward;
+    let goldReward = updatedQuest.goldReward;
     const attribute = updatedQuest.attribute;
-    const attributeXp =
-      getQuestRewards(updatedQuest.difficulty).attributeXp;
+    const attributeXp = getQuestRewards(updatedQuest.difficulty).attributeXp;
 
     // Load user to perform authoritative progression calculations
     const user = await User.findById(session.user.id);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Handle Questline progression & final step bonus
+    let questlineUnlockedNext = false;
+    let questlineCompleted = false;
+    let questlineTitle: string | null = null;
+
+    if (updatedQuest.questlineId && typeof updatedQuest.order === "number") {
+      // Find the next step in this questline
+      const nextQuest = await Quest.findOne({
+        questlineId: updatedQuest.questlineId,
+        order: updatedQuest.order + 1,
+      });
+
+      if (nextQuest) {
+        // Unlock next step
+        nextQuest.locked = false;
+        await nextQuest.save();
+        questlineUnlockedNext = true;
+      } else {
+        // No further steps -> Questline completed!
+        const ql = await Questline.findOneAndUpdate(
+          { _id: updatedQuest.questlineId, userId: session.user.id },
+          { $set: { status: "completed" } },
+          { new: true }
+        );
+        if (ql) {
+          questlineCompleted = true;
+          questlineTitle = ql.title;
+          // Grand Questline Completion Bonus: +200 XP and +100 Gold!
+          xpReward += 200;
+          goldReward += 100;
+        }
+      }
     }
 
     // Previous state
@@ -116,21 +167,43 @@ export async function POST(req: Request, { params }: RouteParams) {
     // Attribute progression
     user.attributes[attribute] = (user.attributes[attribute] || 0) + attributeXp;
 
-    // Streak calculations
-    const streakResult = calculateNewStreak(
-      user.lastActivityDate,
-      user.currentStreak || 0,
-      user.longestStreak || 0,
-      now
-    );
+    // Streak calculations:
+    // Task 4: Redemption Quest completion restores streak to preStreakValue + 1
+    let newStreak = user.currentStreak || 0;
+    let newLongestStreak = user.longestStreak || 0;
+
+    if (updatedQuest.isRedemption) {
+      const restoredStreak = (user.preStreakValue || user.currentStreak || 0) + 1;
+      newStreak = restoredStreak;
+      newLongestStreak = Math.max(newLongestStreak, restoredStreak);
+      user.currentStreak = newStreak;
+      user.longestStreak = newLongestStreak;
+      user.streakStatus = "active";
+      user.preStreakValue = null;
+      user.emberDeadline = null;
+      user.lastActivityDate = now;
+    } else {
+      const streakResult = calculateNewStreak(
+        user.lastActivityDate,
+        user.currentStreak || 0,
+        user.longestStreak || 0,
+        now
+      );
+      user.currentStreak = streakResult.currentStreak;
+      user.longestStreak = streakResult.longestStreak;
+      user.lastActivityDate = streakResult.lastActivityDate;
+      // If user completes any regular quest while in ember mode before deadline, clear ember
+      if (user.streakStatus === "ember") {
+        user.streakStatus = "active";
+        user.emberDeadline = null;
+        user.preStreakValue = null;
+      }
+    }
 
     // Save updated user state
     user.xp = newXp;
     user.level = newLevel;
     user.gold = newGold;
-    user.currentStreak = streakResult.currentStreak;
-    user.longestStreak = streakResult.longestStreak;
-    user.lastActivityDate = streakResult.lastActivityDate;
 
     await user.save();
 
@@ -161,6 +234,10 @@ export async function POST(req: Request, { params }: RouteParams) {
         currentStreak: user.currentStreak,
         longestStreak: user.longestStreak,
         completedAt: now,
+        isRedemption: updatedQuest.isRedemption,
+        questlineUnlockedNext,
+        questlineCompleted,
+        questlineTitle,
       },
       { status: 200 }
     );
@@ -172,3 +249,4 @@ export async function POST(req: Request, { params }: RouteParams) {
     );
   }
 }
+
