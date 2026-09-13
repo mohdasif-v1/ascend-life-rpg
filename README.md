@@ -44,7 +44,21 @@ ASCEND transforms daily tasks and self-discipline into a dark-fantasy RPG progre
 - **Level-Up Celebration:** High-impact arcane celebration modal featuring level milestones, sound feedback support, and reduced-motion fallback options.
 - **Armory Economy:** Virtual shop with unique items. Purchases enforce atomic balance verification (`$gte: price`) and atomic gold deduction (`$inc: -price`).
 - **Chronicle History:** Reverse-chronological ledger tracking past quest accomplishments with populated metadata.
+- **AI Oracle Quest Generator:** Converts real-world tasks and ambitions into tailored RPG trials using Google Gemini (`gemini-1.5-flash`). Features server-side Zod validation, retry fallback, and a daily rate limit of 5 requests/day. Drafts are human-reviewed and editable before creation.
+- **AI Saga Mode:** Summarizes recent completed trials from the Chronicle into an in-character narrative recap recited by the Oracle Chronicler.
 - **Accessibility & UX:** Strict keyboard focus rings (`focus-visible:ring-2`), semantic HTML headings, screen-reader descriptions, and zero emojis (100% SVG icon components via `lucide-react`).
+
+---
+
+## AI Features & Security Architecture
+
+ASCEND integrates Google Gemini (`@google/generative-ai` with `gemini-1.5-flash`) designed around zero-trust client principles:
+
+1. **Server-Side Key Isolation:** `GEMINI_API_KEY` is strictly server-side. No client ever receives or communicates with the LLM API directly.
+2. **Authoritative Numbers (No Stat Manipulation):** The AI suggests trial concepts, but the server authoritatively derives XP and Gold rewards using `getQuestRewards(difficulty)`. The client cannot manipulate rewards through AI prompt injection.
+3. **Strict Validation & Retries:** AI responses must conform to strict JSON schemas parsed through `Zod`. If an output is malformed, the server performs an automatic single retry with strict formatting constraints; if still invalid, a graceful error is returned.
+4. **Human Review Before Persistence:** AI quest drafts are never auto-inserted into the database. Players review, edit titles or tactical instructions, and explicitly confirm which trials to forge into their active quest log.
+5. **Per-User Rate Limiting:** Daily generation quota is tracked on the user document (`aiGenerationsToday`, `aiGenerationsResetAt`) and capped at 5 divinations every 24 hours to prevent abuse and protect API resources.
 
 ---
 
@@ -257,6 +271,7 @@ npm run start
 | `MONGODB_URI` | MongoDB connection URI string | `mongodb+srv://...` (Required) |
 | `NEXTAUTH_URL` | Canonical origin URL for NextAuth callbacks | `http://localhost:3000` (Required) |
 | `NEXTAUTH_SECRET` | Secret token used to sign NextAuth session JWTs | `openssl rand -base64 32` (Required) |
+| `GEMINI_API_KEY` | Google Gemini API key for Oracle Quest Generator & Saga Mode | `AIzaSy...` (Required for AI features) |
 
 ---
 
